@@ -33,8 +33,8 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
-            'billing_adress' => City::inRandomOrder()->value('id'),
-            'delivery_adress' => City::inRandomOrder()->value('id'),
+            'billing_address' => City::inRandomOrder()->value('id'),
+            'delivery_address' => City::inRandomOrder()->value('id'),
         ];
     }
 

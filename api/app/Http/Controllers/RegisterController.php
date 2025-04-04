@@ -16,9 +16,9 @@ class RegisterController extends Controller
         $formFields = $request->validate([
             'name' => 'required|string',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => ['required', 'confirmed', Password::defaults()],
-            'delivery_address' => 'required|exists:cities,id',
-            'billing_address' => 'required|exists:cities,id',
+            'password' => ['required', 'confirmed', 'min:8'],
+            'delivery_address' => 'nullable|exists:cities,id',
+            'billing_address' => 'nullable|exists:cities,id',
         ]);
 
         $user = new User();
@@ -36,13 +36,15 @@ class RegisterController extends Controller
     public function verification(Request $request)
     {
         $formFields = $request->validate([
-            'email' => 'required|strig|email|exists:users',
-            'token' => 'required|string|min:40|exists:users'
+            'email' => 'required|string|email|exists:users,email',
+            'token' => 'required|string|exists:users,token'
         ]);
 
-        $user = User::where('email', '=',$formFields['email'])->where('token', '=', $formFields['token'])->first();
-        if (!$user)
-        {
+        $user = User::where('email', $formFields['email'])
+        ->where('token', $formFields['token'])
+        ->first();
+
+        if (!$user) {
             return response()->json(['failed' => 'failed', 400]);
         }
 
@@ -50,9 +52,6 @@ class RegisterController extends Controller
         $user->email_verified_at = now();
         $user->save();
 
-        return response()->json(['success'=> 'success']);
-
-
-
+        return response()->json(['success' => 'success']);
     }
 }

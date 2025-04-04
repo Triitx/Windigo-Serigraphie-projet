@@ -26,8 +26,8 @@ class DatabaseSeeder extends Seeder
             'role' => 'ROLE_ADMIN',
             'email' => 'admin@windigo.com',
             'password' => Hash::make('test123'),
-            'billing_adress' => 10,
-            'delivery_adress' => 10,
+            'billing_address' => 10,
+            'delivery_address' => 10,
             'email_verified_at' => now(),
             'remember_token' => Str::random(10)
           ]);
@@ -37,8 +37,8 @@ class DatabaseSeeder extends Seeder
             'role' => 'ROLE_USER',
             'email' => 'user@windigo.com',
             'password' => Hash::make('test123'),
-            'billing_adress' => 10,
-            'delivery_adress' => 10,
+            'billing_address' => 10,
+            'delivery_address' => 10,
             'email_verified_at' => now(),
             'remember_token' => Str::random(10)
           ]);

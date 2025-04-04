@@ -24,8 +24,8 @@ class User extends Authenticatable
         'role',
         'email',
         'password',
-        'billing_adress',
-        'delivery_adress',
+        'billing_address',
+        'delivery_address',
 
     ];
 
@@ -72,14 +72,14 @@ class User extends Authenticatable
         return $this->hasMany(Order::class, 'order_id');
     }
 
-    public function deliveryAdress()
+    public function deliveryAddress()
     {
-        return $this->belongsTo(City::class, 'delivery_adress');
+        return $this->belongsTo(City::class, 'delivery_address');
     }
 
-    public function billingAdress()
+    public function billingAddress()
     {
-        return $this->belongsTo(City::class, 'billing_adress');
+        return $this->belongsTo(City::class, 'billing_address');
     }
 
     public function reservationSessions()

@@ -1,10 +1,14 @@
-import './assets/main.css'
+import 'bootstrap';
+// Import our custom CSS
+import './assets/styles.scss';
 
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import { useUserStore } from '@/stores/User'
 import { createPinia } from 'pinia'
+
+
 
 const pinia = createPinia()
 const app = createApp(App)

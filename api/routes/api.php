@@ -44,7 +44,8 @@ Route::controller(ProductController::class)->prefix('products')->group(function(
 //Routes du panier
 Route::controller(CartController::class)->prefix('carts')->group(function(){
     Route::get('','show')->name('cart.show');
-    Route::post('add', 'add');
+    Route::post('set', 'set');
+    Route::post('add/{product_id}', 'add');
     Route::post('remove/{product_id}', 'remove');
     Route::post('clear', 'clear');
     });

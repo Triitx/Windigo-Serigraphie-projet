@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('name');
             $table->enum('role', RoleEnum::values());
             $table->string('email')->unique();
-            $table->foreignId('delivery_adress')->constrained('cities');
-            $table->foreignId('billing_adress')->constrained('cities');
+            $table->foreignId('delivery_address')->nullable()->constrained('cities');
+            $table->foreignId('billing_address')->nullable()->constrained('cities');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('token');

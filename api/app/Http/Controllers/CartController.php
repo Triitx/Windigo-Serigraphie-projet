@@ -11,7 +11,7 @@ class CartController extends Controller
 
 {
 
-    public function add(Request $request, Cart $cart)
+    public function set(Request $request)
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
@@ -25,6 +25,21 @@ class CartController extends Controller
         return redirect()->route('cart.show')->with('success', 'Produit ajouté au panier avec succès !');
     }
 
+    public function add($id)
+    {
+        $cart = Cart::where('product_id', $id)->where('user_id', Auth::id());
+        if ($cart) {
+            $cart->quantity =+1;
+
+            $cart->save();
+        } else {
+            $cart = Cart::updateOrCreate(
+                ['user_id' => Auth::id(), 'product_id' => $id],
+                ['quantity' => 1]
+            );
+        }
+    }
+
 
     public function show(Cart $cart)
     {
@@ -33,17 +48,18 @@ class CartController extends Controller
         return response()->json($cart);
     }
 
-    public function clear(Cart $cart)
+    public function clear()
     {
-        $cart->user_id = Auth::user()->id;
-        $cart->delete();
+        $user = Auth::user();
+
+        Cart::where('user_id', $user->id)->delete();
         return response()->json(['success' => 'Panier vidé avec succès !']);
     }
 
 
     public function remove($id)
     {
-        $cart = Cart::where('id', $id)->where('user_id', Auth::id())->first();
+        $cart = Cart::where('product_id', $id)->where('user_id', Auth::id())->first();
         if ($cart) {
             $cart->delete();
             return redirect()->route('cart.show')->with('success', 'Produit retiré du panier');

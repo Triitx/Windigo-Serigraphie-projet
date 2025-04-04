@@ -34,23 +34,23 @@ class RegisterEmail extends Mailable
      * Get the message envelope.
      */
 
-    public function envelope(): Envelope
-    {
-        return new Envelope(
-            subject: 'Register Email',
-        );
-    }
+    // public function envelope(): Envelope
+    // {
+    //     return new Envelope(
+    //         subject: 'Register Email',
+    //     );
+    // }
 
-    /**
-     * Get the message content definition.
-     */
+    // /**
+    //  * Get the message content definition.
+    //  */
 
-    public function content(): Content
-    {
-        return new Content(
-            view: 'view.name',
-        );
-    }
+    // public function content(): Content
+    // {
+    //     return new Content(
+    //         view: 'view.name',
+    //     );
+    // }
 
     /**
      * Get the attachments for the message.

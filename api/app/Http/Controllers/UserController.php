@@ -32,9 +32,9 @@ class UserController extends Controller
                 'max:255',
                 Rule::unique('users', 'email')
             ],
-            'password' => ['required', 'confirmed', Password::defaults()],
-            'delivery_adress' => 'required|exists:cities,id',
-            'billing_adress' => 'required|exists:cities,id',
+            'password' => ['required', 'confirmed', 'min:8'],
+            'delivery_address' => 'nullable|exists:cities,id',
+            'billing_address' => 'nullable|exists:cities,id',
         ]);
 
 
