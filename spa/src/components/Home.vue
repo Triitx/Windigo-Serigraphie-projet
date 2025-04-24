@@ -15,91 +15,95 @@ const openReadmeInEditor = () => fetch('/__open-in-editor?file=README.md')
     <div class="home-container">
 
       <div class="row">
-        <div class="about">
-          <div class="col">
-            <div class="row">
-              <div class="banner-content-title h1">A propos</div>
+        <div class="col-8">
+          <div class="row">
+            <div class="banner-content-title h1">A propos</div>
+          </div>
+          <div class="about">
+            <div class="about-img">
+              <img class="card-img-top" src="@/assets/apropos.png" alt="Card image cap">
             </div>
-            <div class="row">
-              <div class="col">
-                <img class="card-img-top" src="@/assets/apropos.png" alt="Card image cap">
-              </div>
-              <div class="col">
-                <div class="overflow-auto">
-                  <p class="u-text-justify">Windigo est un petit atelier de sérigraphie artisanale basé au Mans
-                    spécialisé dans l'impression sur supports textiles et papiers.
+            <div class="about-txt">
+              <p class="u-text-justify">Windigo est un petit atelier de sérigraphie artisanale basé au Mans
+                spécialisé dans l'impression sur supports textiles et papiers.
 
-                    Windigo propose une collection de vêtements et sacs imprimés et d'articles de papeterie, disponibles
-                    sur etsy.
+                Windigo propose une collection de vêtements et sacs imprimés et d'articles de papeterie, disponibles
+                sur etsy.
 
-                    Je suis également à votre disposition pour toute question concernant un besoin particulier :
-                    windigo.serigraphie@gmail.com</p>
+                Je suis également à votre disposition pour toute question concernant un besoin particulier :
+                windigo.serigraphie@gmail.com</p>
+            </div>
+          </div>
+
+          <div class="banner-content-title h1">Boutique</div>
+
+          <div class="liste-produit">
+            <div class="produit">
+              <div class="card text-center mb-3" style="width: 100%;">
+                <div class="card-body">
+                  <img src="@/assets/produit1.png" class="img-fluid object-fit-cover border rounded"
+                    alt="Card image cap">
+                  <h6 class="card-title">Illustration sérigraphiée - Van life</h6>
+                  <span class="card-text">40,00€</span>
                 </div>
               </div>
             </div>
-            <div class="row">
-              <div class="banner-content-title h1">Boutique</div>
+            <div class="produit">
+              <div class="card text-center mb-3" style="width: 100%;">
+                <div class="card-body">
+                  <img src="@/assets/produit2.png" class="img-fluid object-fit-cover border rounded"
+                    alt="Card image cap">
+                  <h6 class="card-title">Illustration sérigraphiée - Fortune teller</h6>
+                  <span class="card-text">30,00€</span>
+                </div>
+              </div>
             </div>
-            <div class="btq">
-              <div class="col">
-                <div class="row">
-                  <div class="img-bqt"><img class="object-fit-cover border rounded" src="@/assets/produit1.png"
-                      alt="Card image cap"></div>
+            <div class="produit">
+              <div class="card text-center mb-3" style="width: 100%;">
+                <div class="card-body">
+                  <img src="@/assets/produit3.png" class="img-fluid object-fit-cover border rounded"
+                    alt="Card image cap">
+                  <h6 class="card-title">T-shirt manches longues - Unleash the beast</h6>
+                  <span class="card-text">27,00€</span>
                 </div>
-                <div class="row">description</div>
               </div>
-              <div class="col">
-                <div class="row">
-                  <div class="row">
-                    <div class="img-bqt"><img class="object-fit-cover border rounded" src="@/assets/produit2.png"
-                      alt="Card image cap"></div>
-                  </div>
+            </div>
+            <div class="produit">
+              <div class="card text-center mb-3" style="width: 100%;">
+                <div class="card-body">
+                  <img src="@/assets/produit4.png" class="img-fluid object-fit-cover border rounded"
+                    alt="Card image cap">
+                  <h6 class="card-title">T-shirt unisexe - Nocturnal</h6>
+                  <span class="card-text">32,00€</span>
                 </div>
-                <div class="row">description</div>
-              </div>
-              <div class="col">
-                <div class="row">
-                  <div class="img-bqt"><img class="object-fit-cover border rounded" src="@/assets/produit3.png"
-                    alt="Card image cap"></div>
-                </div>
-                <div class="row">description</div>
-              </div>
-              <div class="col">
-                <div class="row">
-                  <div class="img-bqt"><img class="object-fit-cover border rounded" src="@/assets/produit4.png"
-                    alt="Card image cap"></div>
-                </div>
-                <div class="row">description</div>
               </div>
             </div>
           </div>
         </div>
-        <div class="news">
-          <div class="col">
-            <div class="p-3 mb-2 bg-body-secondary">
-              <div class="row">
-                <div class="banner-content-title h1">Nouveautés</div>
+        <div class="col-4">
+          <div class="p-3 mb-2 bg-body-secondary">
+            <div class="row">
+              <div class="banner-content-title h1">Nouveautés</div>
+            </div>
+            <div class="row">
+              <div class="col"><img class="card-img-top" src="@/assets/nouveaute1.png" alt="Card image cap"></div>
+              <div class="col">
+                <p class="u-text-justify">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+                  tempor incididunt ut labore et dolore magna aliqua.</p>
               </div>
-              <div class="row">
-                <div class="col"><img class="card-img-top" src="@/assets/nouveaute1.png" alt="Card image cap"></div>
-                <div class="col">
-                  <p class="u-text-justify">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                    tempor incididunt ut labore et dolore magna aliqua.</p>
-                </div>
+            </div>
+            <div class="row">
+              <div class="col"><img class="card-img-top" src="@/assets/nouveaute2.png" alt="Card image cap"></div>
+              <div class="col">
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+                  tempor incididunt ut labore et dolore magna aliqua.</p>
               </div>
-              <div class="row">
-                <div class="col"><img class="card-img-top" src="@/assets/nouveaute2.png" alt="Card image cap"></div>
-                <div class="col">
-                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                    tempor incididunt ut labore et dolore magna aliqua.</p>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col"><img class="card-img-top" src="@/assets/nouveaute3.png" alt="Card image cap"></div>
-                <div class="col">
-                  <p class="u-text-justify">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                    tempor incididunt ut labore et dolore magna aliqua.</p>
-                </div>
+            </div>
+            <div class="row">
+              <div class="col"><img class="card-img-top" src="@/assets/nouveaute3.png" alt="Card image cap"></div>
+              <div class="col">
+                <p class="u-text-justify">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+                  tempor incididunt ut labore et dolore magna aliqua.</p>
               </div>
             </div>
           </div>
@@ -107,37 +111,37 @@ const openReadmeInEditor = () => fetch('/__open-in-editor?file=README.md')
       </div>
 
       <div class="row">
-        <div class="col">
+        <div class="col-6">
           <div class="row">
             <div class="banner-content-title h1">Ateliers</div>
           </div>
           <div class="row">
-            <div class="row">
-              <div class="col">
-                <div class="row">
-                  <div>
-                    <img class="card-img-top" src="@/assets/atelier1.png" alt="Card image cap">
-                  </div>
-                  <div class="row">
-                    Sérigraphiez votre T-shirt ou votre sac sur-mesure
-                  </div>
-                </div>
-              </div>
-              <div class="col">
-                <div class="row">
-                  <img class="card-img-top" src="@/assets/atelier2.png" alt="Card image cap">
-                </div>
-                <div class="row">
-                  Initiez vous à la sérigraphie sur papier
+            <div class="col-sm-6 mb-3 mb-sm-0">
+              <div class="card" style="width: 18rem;">
+                <img src="@/assets/atelier1.png" class="card-img-top" alt="Card image cap">
+                <div class="card-body">
+                  <h5 class="card-title">TEXTILE</h5>
+                  <p class="card-text">Sérigraphiez votre T-shirt ou votre sac sur-mesure.</p>
+                  <a href="#" class="btn btn-primary">En savoir plus ...</a>
                 </div>
               </div>
             </div>
-            <div class="row">
-              Avis
+            <div class="col-sm-6">
+              <div class="card" style="width: 18rem;">
+                <img src="@/assets/atelier2.png" class="card-img-top" alt="Card image cap">
+                <div class="card-body">
+                  <h5 class="card-title">PAPIER</h5>
+                  <p class="card-text">Initiez vous à la sérigraphie sur papier.</p>
+                  <a href="#" class="btn btn-primary">En savoir plus ...</a>
+                </div>
+              </div>
             </div>
           </div>
+          <div class="row">
+            Avis
+          </div>
         </div>
-        <div class="col">
+        <div class="col-6">
           <div class="row">
             <div class="banner-content-title h1">Port-Folio</div>
           </div>
@@ -167,7 +171,18 @@ const openReadmeInEditor = () => fetch('/__open-in-editor?file=README.md')
 
 .about {
   display: flex;
-  flex: 2;
+  flex-direction: row;
+  gap: 5%;
+}
+
+.about-img {
+  display: flex;
+  flex: 1;
+}
+
+.about-txt {
+  display: flex;
+  flex: 1;
 }
 
 .news {
@@ -176,12 +191,28 @@ const openReadmeInEditor = () => fetch('/__open-in-editor?file=README.md')
   flex: 1;
 }
 
-.btq {
+.liste-produit {
   display: flex;
   flex-direction: row;
+  gap: 1vw;
 }
-.img-btq {
+
+.produit {
   width: 100%;
-  height: 100%;
+  height: auto;
+}
+
+.produit img {
+  width: 100%;
+  height: 15vw !important;
+}
+
+.produit h6 {
+  height: 5vw;
+}
+
+.atelier-list {
+  display: flex;
+  flex-direction: row;
 }
 </style>
