@@ -18,7 +18,7 @@ class ProductController extends Controller
         $option = $request->query('option');
         $category = $request->query('category');
         $product = Product::search($name, $minPrice, $maxPrice, $option, $category);
-        return response()->json($product);
+        return view('products.index', compact('products'));
     }
 
     /**

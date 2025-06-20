@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ForgotPasswordController;
-use App\Http\Controllers\ProductController;
+use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -33,13 +33,13 @@ Route::delete('/{user}','destroy');
 });
 
 //Routes CRUD produits
-Route::controller(ProductController::class)->prefix('products')->group(function() {
+Route::controller(AdminProductController::class)->prefix('products')->group(function() {
     Route::get('','index');
     Route::post('','store');
     Route::get('/{product}','show');
     Route::put('/{product}','update');
     Route::delete('/{product}','destroy');
-    });
+    })->middleware('admin');
 
 //Routes du panier
 Route::controller(CartController::class)->prefix('carts')->group(function(){
