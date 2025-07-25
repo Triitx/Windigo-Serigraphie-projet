@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 
 class ProductController extends Controller
 {
@@ -38,6 +39,11 @@ class ProductController extends Controller
 
         $product = new Product();
         $product->fill($formFields);
+        if ($request->file('picture')) {
+            $fileName = time() . '_' . $request->picture->getClientOriginalName();
+            $product->avatar = $fileName;
+            $request->picture->move(public_path('images/uploads'), $fileName);
+        }
         $product->save();
         return response()->json($product);
     }
@@ -66,6 +72,15 @@ class ProductController extends Controller
         ]);
 
         $product->fill($formFields);
+        if ($request->file('picture') && File::exists(public_path('images/uploads/' . $product->avatar))) {
+            File::delete(public_path('images/uploads/' . $product->avatar));
+        }
+
+        if ($request->file('picture')) {
+            $fileName = time() . '_' . $request->picture->getClientOriginalName();
+            $product->avatar = $fileName;
+            $request->picture->move(public_path('images/uploads'), $fileName);
+        }
         $product->save();
         return response()->json($product);
     }
@@ -73,8 +88,12 @@ class ProductController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Product $product)
+    public function destroy(Request $request, Product $product)
     {
+        $request->validated();
+        if (File::exists(public_path('images/uploads/' . $product->picture))) {
+            File::delete(public_path('images/uploads/' . $product->picture));
+        }
         $product->delete();
         return response()->json(['success' => 'success']);
     }
