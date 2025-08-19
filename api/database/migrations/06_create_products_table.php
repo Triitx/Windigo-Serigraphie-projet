@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->double('price');
+            $table->integer('price');
             $table->integer('stock');
-            $table->string('description');
+            $table->text('description');
             $table->boolean('archived');
             $table->foreignId('option_id')->references('id')->on('options')->onDelete('cascade');
             $table->foreignId('category_id')->references('id')->on('categories')->onDelete('cascade');

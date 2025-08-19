@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class EnsureIsAdmin
 {
@@ -14,9 +15,18 @@ class EnsureIsAdmin
      */
     public function handle(Request $request, Closure $next)
     {
-        if ($request->user()->role == 'ROLE_ADMIN')
-        return $next($request);
-        
-        abort(403);
+    // Vérifie d’abord si l’utilisateur est authentifié
+    if (!$request->user()) {
+        return response()->json(['message' => 'Non authentifié'], 401);
+    }
+
+    // Vérifie ensuite le rôle admin
+
+ Log::info('Middleware EnsureIsAdmin: rôle de l’utilisateur', ['role' => $request->user()->role]);
+
+    if ($request->user()->role !== 'ROLE_ADMIN') {
+        Log::warning('Accès interdit: rôle non admin', ['role' => $request->user()->role]);
+        return response()->json(['message' => 'Accès interdit'], 403);
+    }
     }
 }

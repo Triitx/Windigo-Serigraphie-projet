@@ -2,83 +2,83 @@
 
 namespace App\Models;
 
-use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    public $timestamps = false;
+  public $timestamps = false;
 
-    use HasFactory;
+  use HasFactory;
 
-    protected $fillable = [
-        'name',
-        'price',
-        'stock',
-        'description',
-        'archived',
-        'option_id',
-        'category_id',
-    ];
-    
-    static public function search(string $name = null, string $minPrice = null, string $maxPrice = null, string $option = null, string $category = null, int $page = null, int $limit = null)
-    {
-      $query = self::query();
+  protected $fillable = [
+    'name',
+    'price',
+    'stock',
+    'description',
+    'archived',
+    'option_id',
+    'category_id',
+    'picture'
+  ];
 
-      if ($name) {
-        $query->where('name', $name);
-      }
+  static public function search(string $name = null, string $minPrice = null, string $maxPrice = null, string $option = null, string $category = null, int $page = null, int $limit = null)
+  {
+    $query = self::query();
 
-      if (is_numeric($minPrice)) {
-        $query->where('price', '>', $minPrice);
-      }
-
-      if (is_numeric($maxPrice)) {
-        $query->where('price', '<', $maxPrice);
-      }
-
-      if (is_numeric($option)) {
-        $query->where('option_id', $option);
-      }
-
-      if (is_numeric($category)) {
-        $query->where('category_id', $category);
-      }
-
-      $totalResults = $query->count();
-      $query->Orderby('id', 'ASC');
-
-      if ($page && $limit) {
-      $query->skip(($page - 1 ) * $limit)->take($limit);
-      }
-  
-      return ['products' => $query->get(), 'totalResults' => $totalResults];
+    if ($name) {
+      $query->where('name', $name);
     }
 
-    public function cartUsers()
-    {
-        return $this->hasMany(User::class);
+    if (is_numeric($minPrice)) {
+      $query->where('price', '>', $minPrice);
     }
 
-    public function customerReviews()
-    {
-        return $this->hasMany(CustomerReview::class);
-    }
-    
-    public function orders()
-    {
-        return $this->belongsToMany(Order::class, 'order_products');
+    if (is_numeric($maxPrice)) {
+      $query->where('price', '<', $maxPrice);
     }
 
-    public function categories()
-    {
-        return $this->belongsToMany(Category::class);
+    if (is_numeric($option)) {
+      $query->where('option_id', $option);
     }
 
-    public function options()
-    {
-        return $this->belongsToMany(Option::class);
+    if (is_numeric($category)) {
+      $query->where('category_id', $category);
     }
 
+    $totalResults = $query->count();
+    $query->Orderby('id', 'ASC');
+
+    if ($page && $limit) {
+      $query->skip(($page - 1) * $limit)->take($limit);
+    }
+
+    return ['products' => $query->get(), 'totalResults' => $totalResults];
   }
+
+  public function cartUsers()
+  {
+    return $this->hasMany(User::class);
+  }
+
+  public function customerReviews()
+  {
+    return $this->hasMany(CustomerReview::class);
+  }
+
+  public function orders()
+  {
+    return $this->belongsToMany(Order::class, 'order_products')
+      ->withPivot('quantity', 'price');
+  }
+
+  public function categories()
+  {
+    return $this->belongsTo(Category::class);
+  }
+
+  public function options()
+  {
+    return $this->belongsTo(Option::class);
+  }
+}

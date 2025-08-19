@@ -29,14 +29,15 @@ class CartController extends Controller
     {
         $cart = Cart::where('product_id', $id)->where('user_id', Auth::id());
         if ($cart) {
-            $cart->quantity =+1;
+            $cart->quantity = +1;
 
             $cart->save();
         } else {
             $cart = Cart::updateOrCreate(
                 ['user_id' => Auth::id(), 'product_id' => $id],
-                ['quantity' => 1]
+                ['quantity' => 1],
             );
+            $cart->save();
         }
     }
 

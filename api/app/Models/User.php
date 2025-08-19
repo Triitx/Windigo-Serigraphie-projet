@@ -9,6 +9,7 @@ use App\Enums\RoleEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
 
 class User extends Authenticatable
 {
@@ -50,11 +51,20 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'role'=> RoleEnum::class,
+            'role' => RoleEnum::class,
         ];
     }
 
-    public function IsAdmin(){
+    public function resolveRouteBinding($value, $field = null): ?self
+    {
+        return $value === 'me' ? Auth::user() : parent::resolveRouteBinding(
+            $value,
+            $field
+        );
+    }
+
+    public function IsAdmin()
+    {
         return $this->role === RoleEnum::ROLE_ADMIN;
     }
 

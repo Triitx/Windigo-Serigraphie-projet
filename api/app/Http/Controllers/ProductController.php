@@ -19,7 +19,8 @@ class ProductController extends Controller
         $option = $request->query('option');
         $category = $request->query('category');
         $product = Product::search($name, $minPrice, $maxPrice, $option, $category);
-        return view('products.index', compact('products'));
+
+        return response()->json($product);
     }
 
     /**
@@ -34,15 +35,18 @@ class ProductController extends Controller
             'description' => 'required|string',
             'archived' => 'required|integer',
             'option_id' => 'required|exists:options,id',
-            'category_id'=> 'required|exists:categories,id'
+            'category_id'=> 'required|exists:categories,id',
+            'picture' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
         ]);
 
         $product = new Product();
         $product->fill($formFields);
+
         if ($request->file('picture')) {
             $fileName = time() . '_' . $request->picture->getClientOriginalName();
+            $path = 'images/uploads/' . $fileName;
             $product->avatar = $fileName;
-            $request->picture->move(public_path('images/uploads'), $fileName);
+            $request->picture->move(public_path('images/uploads'), $path);
         }
         $product->save();
         return response()->json($product);
@@ -68,7 +72,8 @@ class ProductController extends Controller
             'detail' => 'string',
             'archived' => 'integer',
             'option_id' => 'exists:options,id',
-            'category_id'=> 'exists:categories,id'
+            'category_id'=> 'exists:categories,id',
+            'picture' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
         ]);
 
         $product->fill($formFields);

@@ -16,45 +16,45 @@ use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
-    public function run(): void
-    {
-        User::create([
-            'name' => 'Administrateur',
-            'role' => 'ROLE_ADMIN',
-            'email' => 'admin@windigo.com',
-            'password' => Hash::make('test123'),
-            'billing_address' => 10,
-            'delivery_address' => 10,
-            'email_verified_at' => now(),
-            'remember_token' => Str::random(10)
-          ]);
-          
-          User::create([
-            'name' => 'Utilisateur',
-            'role' => 'ROLE_USER',
-            'email' => 'user@windigo.com',
-            'password' => Hash::make('test123'),
-            'billing_address' => 10,
-            'delivery_address' => 10,
-            'email_verified_at' => now(),
-            'remember_token' => Str::random(10)
-          ]);
+  /**
+   * Seed the application's database.
+   */
+  public function run(): void
+  {
+    User::create([
+      'name' => 'Administrateur',
+      'role' => 'ROLE_ADMIN',
+      'email' => 'admin@windigo.com',
+      'password' => Hash::make('test123'),
+      'billing_address' => 10,
+      'delivery_address' => 10,
+      'email_verified_at' => now(),
+      'remember_token' => Str::random(10)
+    ]);
 
-          $this->call([
-            WorkshopSeeder::class,
-            CategorySeeder::class,
-            OptionSeeder::class
-        ]);
+    User::create([
+      'name' => 'Utilisateur',
+      'role' => 'ROLE_USER',
+      'email' => 'user@windigo.com',
+      'password' => Hash::make('test123'),
+      'billing_address' => 10,
+      'delivery_address' => 10,
+      'email_verified_at' => now(),
+      'remember_token' => Str::random(10)
+    ]);
 
-          User::factory(10)->create();
-          Product::factory(5)->create();
-          Cart::factory(2)->create();
-          Order::factory(5)->create();
-          OrderProduct::factory(5)->create();
-          WorkshopSession::factory(10)->create();
-          Reservation::factory(3)->create();
-    }
+    $this->call([
+      WorkshopSeeder::class,
+      CategorySeeder::class,
+      OptionSeeder::class
+    ]);
+
+    User::factory(10)->create();
+    Product::factory(5)->create();
+    Cart::factory(2)->create();
+    Order::factory(5)->create();
+    OrderProduct::factory(5)->create();
+    WorkshopSession::factory(10)->create();
+    Reservation::factory(3)->create();
+  }
 }

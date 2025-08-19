@@ -20,8 +20,9 @@ class OrderFactory extends Factory
     public function definition(): array
     {
         return [
-            'date' => date($format = 'y-m-d', $max = 2099),
             'user_id' => random_int(1, User::count()),
+            'total' => random_int(1, 20),
+            'status' => 'en attente'
         ];
     }
     //  public function configure()
