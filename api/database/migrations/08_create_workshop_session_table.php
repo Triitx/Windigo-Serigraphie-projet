@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('workshop_sessions', function (Blueprint $table) {
             $table->id();
             $table->string('session_number')->unique();
-            $table->tinyInteger('capacity');
-            $table->foreignId('Workshop_id')->constrained();
+            $table->integer('capacity');
+            $table->foreignId('workshop_id')->constrained()->onDelete('cascade');
+            $table->dateTime('date');
             $table->timestamps();
         });
     }

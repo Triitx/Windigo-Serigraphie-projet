@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cart;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -22,23 +21,48 @@ class CartController extends Controller
             ['user_id' => Auth::id(), 'product_id' => $request->product_id],
             ['quantity' => $request->quantity]
         );
+        $cart->save();
         return redirect()->route('cart.show')->with('success', 'Produit ajouté au panier avec succès !');
     }
 
-    public function add($id)
+    public function add($product_id)
     {
-        $cart = Cart::where('product_id', $id)->where('user_id', Auth::id());
-        if ($cart) {
-            $cart->quantity = +1;
+        $cart = Cart::where('product_id', $product_id)
+            ->where('user_id', Auth::id())
+            ->first();
 
+        if ($cart) {
+            $cart->quantity += 1;
             $cart->save();
         } else {
             $cart = Cart::updateOrCreate(
-                ['user_id' => Auth::id(), 'product_id' => $id],
-                ['quantity' => 1],
+                [
+                    'user_id' => Auth::id(),
+                    'product_id' => $product_id,
+                    'quantity' => 1
+                ]
             );
-            $cart->save();
         }
+        return redirect()->route('cart.show');
+    }
+
+    public function remove($product_id)
+    {
+        $cart = Cart::where('product_id', $product_id)
+            ->where('user_id', Auth::id())
+            ->first();
+
+        if ($cart) {
+            $cart->quantity -= 1;
+            $cart->save();
+            if ($cart->quantity <= 0) {
+                $cart->delete();
+            } else {
+                $cart->save();
+            }
+        };
+
+        return redirect()->route('cart.show');
     }
 
 
@@ -58,7 +82,7 @@ class CartController extends Controller
     }
 
 
-    public function remove($id)
+    public function delete($id)
     {
         $cart = Cart::where('product_id', $id)->where('user_id', Auth::id())->first();
         if ($cart) {

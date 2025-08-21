@@ -28,10 +28,9 @@ class OptionController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Option $option)
+   public function show($id)
     {
-
-        return response()->json($option);
+        return Option::findOrFail($id);
     }
 
     /**

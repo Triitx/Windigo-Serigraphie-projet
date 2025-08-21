@@ -20,7 +20,7 @@ class ReservationFactory extends Factory
     {
         return [
         'user_id' => User::inRandomOrder()->value('id'),
-        'Workshop_sessions_id' => WorkshopSession::inRandomOrder()->value('id')
+        'workshop_session_id' => WorkshopSession::inRandomOrder()->value('id')
         ];
     }
 }

@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Cart;
+use App\Models\CustomerReview;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Product;
@@ -56,5 +57,6 @@ class DatabaseSeeder extends Seeder
     OrderProduct::factory(5)->create();
     WorkshopSession::factory(10)->create();
     Reservation::factory(3)->create();
+    CustomerReview::factory(5)->create();
   }
 }

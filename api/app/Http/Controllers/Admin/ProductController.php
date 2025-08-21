@@ -47,13 +47,13 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
 
         $validated = $request->validate([
-            'name' => 'required|string',
-            'price' => 'required|numeric',
-            'stock' => 'required|integer',
-            'description' => 'required|string',
+            'name' => 'string',
+            'price' => 'numeric',
+            'stock' => 'integer',
+            'description' => 'string',
             'archived' => 'boolean',
-            'option_id' => 'required|exists:options,id',
-            'category_id' => 'required|exists:categories,id',
+            'option_id' => 'exists:options,id',
+            'category_id' => 'exists:categories,id',
             'picture' => 'nullable|image|max:2048'
         ]);
 

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('reservations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->references('id')->on('users');
-            $table->foreignId('workshop_sessions_id')->references('id')->on('workshop_sessions');
+            $table->foreignId('workshop_session_id')->references('id')->on('workshop_sessions');
             $table->timestamps();
         });
     }

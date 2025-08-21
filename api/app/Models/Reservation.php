@@ -2,25 +2,25 @@
 
 namespace App\Models;
 
-use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Reservation extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'user_id',
-        'Workshop_sessions_id'
+        'workshop_session_id'
     ];
 
-    public function users()
+  public function user()
     {
-        return $this->hasMany(User::class);
+        return $this->belongsTo(User::class);
     }
 
-    public function sessions()
+    public function session()
     {
-        return $this->hasMany(WorkshopSession::class);
+        return $this->belongsTo(WorkshopSession::class, 'workshop_session_id');
     }
 }

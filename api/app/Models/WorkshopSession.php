@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -13,16 +12,22 @@ class WorkshopSession extends Model
     protected $fillable = [
     'session_number',
     'capacity',
-    'workshop_id'
+    'workshop_id',
+    'date',
     ];
 
-    public function Workshop()
+    public function workshop()
     {
         return $this->belongsTo(Workshop::class);
     }
 
-    public function reservationUsers()
+    public function reservations()
     {
-        return $this->hasMany(User::class);
+        return $this->hasMany(Reservation::class, 'workshop_session_id');
+    }
+
+    public function users()
+    {
+        return $this->hasManyThrough(User::class, Reservation::class, 'workshop_session_id', 'id', 'id', 'user_id');
     }
 }
