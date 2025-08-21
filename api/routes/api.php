@@ -53,9 +53,7 @@ Route::controller(ControllersProductController::class)->prefix('products')->grou
 });
 
 //Gestion des sessions
-Route::controller(WorkshopSessionController::class)->prefix('products')->group(function () {
-    Route::get('/workshops/{id}/sessions/create', 'create')->name('create');
-    Route::get('/workshops/{id}/sessions', 'show')->name('show');
+Route::controller(WorkshopSessionController::class)->group(function () {
     Route::post('/workshops/{id}/sessions', 'store');
     Route::put('/sessions/{id}', 'update');
     Route::delete('/sessions/{id}', 'destroy');
@@ -92,7 +90,7 @@ Route::controller(CartController::class)->prefix('carts')->group(function () {
 
 
 //Routes Admin
-Route::prefix('admin')->group(function () {
+Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
     // Produits
     Route::controller(ProductController::class)->prefix('products')->group(function () {
         Route::get('', 'index');
@@ -124,4 +122,4 @@ Route::prefix('admin')->group(function () {
         Route::put('/{option}', 'update');
         Route::delete('/{option}', 'destroy');
     });
-})->middleware('admin');
+});

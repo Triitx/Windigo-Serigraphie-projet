@@ -21,6 +21,21 @@ class BookingController extends Controller
         return response()->json($reservations);
     }
 
+    public function availableSessions($workshop_id)
+{
+    $sessions = WorkshopSession::where('workshop_id', $workshop_id)
+        ->where('date', '>=', now()) // uniquement à venir
+        ->whereRaw('capacity > (SELECT COUNT(*) FROM reservations WHERE workshop_session_id = workshop_sessions.id)')
+        ->orderBy('date', 'asc')
+        ->get();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Sessions disponibles pour réservation',
+        'data' => $sessions
+    ]);
+}
+
     public function store($session_id)
     {
         $user = Auth::user();

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('session_number')->unique();
             $table->integer('capacity');
             $table->foreignId('workshop_id')->constrained()->onDelete('cascade');
-            $table->dateTime('date');
+            $table->date('date');
             $table->timestamps();
         });
     }
