@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\WorkshopSession;
-use App\Models\Workshop;
 
 class WorkshopSessionController extends Controller
 {

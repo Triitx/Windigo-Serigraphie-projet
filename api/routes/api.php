@@ -53,17 +53,22 @@ Route::controller(ControllersProductController::class)->prefix('products')->grou
 });
 
 //Gestion des sessions
-Route::controller(WorkshopSessionController::class)->group(function () {
-    Route::post('/workshops/{id}/sessions', 'store');
-    Route::put('/sessions/{id}', 'update');
-    Route::delete('/sessions/{id}', 'destroy');
+
+Route::controller(WorkshopSessionController::class)->prefix('workshops')->group(function () {
+Route::post('/{workshop}/sessions', 'store');
+Route::put('/{workshop}/sessions/{id}', 'update');
+Route::delete('/{workshop}/sessions/{id}', 'destroy');
 });
 
+
+
 //Gestion des réservations
-Route::controller(BookingController::class)->group(function () {
-    Route::get('/mes-reservations', 'index')->name('bookings.index');
-    Route::post('/sessions/{id}/reserver', 'store')->name('bookings.store');
-    Route::delete('/reservations/{id}', 'destroy')->name('bookings.destroy');
+Route::get('/workshops/{workshop_id}/sessions/available', [BookingController::class, 'availableSessions']); // Sessions disponibles pour un atelier donné
+
+Route::controller(BookingController::class)->prefix('bookings')->group(function () {
+Route::get('/bookings', 'index'); 
+Route::post('/bookings/{session_id}', 'store'); 
+Route::delete('/bookings/{id}', 'destroy'); 
 });
 
 
