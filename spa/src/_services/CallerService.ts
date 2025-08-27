@@ -1,6 +1,5 @@
 // _services/CallerService.ts
 import axios from 'axios';
-import router from '@/router';
 
 const Axios = axios.create({
     baseURL: 'http://localhost:8000',

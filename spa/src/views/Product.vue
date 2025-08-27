@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import WelcomeItem from '@/components/WelcomeItem.vue';
+import Boutique from '@/components/Boutique.vue';
 
 </script>
 
 <template>
   <main>
-    <WelcomeItem />
+    <Boutique />
   </main>
 </template>

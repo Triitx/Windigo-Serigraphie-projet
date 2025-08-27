@@ -1,55 +1,79 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
 import * as AuthService from './_services/AuthService.ts'
 import { useUserStore } from '@/stores/User'
-import { useProductStore } from '@/stores/Product'
+import { useCartStore } from '@/stores/Cart'
+import { storeToRefs } from 'pinia'
 
-const User = useUserStore();
-const Product = useProductStore();
+const userStore = useUserStore()
+const cartStore = useCartStore()
+
+// Déstructuration réactive du store
+const { user, isLogged } = storeToRefs(userStore)
+
+// Fonction de déconnexion
+function logout() {
+  AuthService.logout().then(() => {
+    userStore.clearUser() // reset le store
+    window.location.href = '/login'
+  })
+}
+
+// Calcul du total d'articles dans le panier
+const cartCount = () => cartStore.items.reduce((total, item) => total + item.quantity, 0)
 </script>
 
 <template>
   <header>
-    <div class="logo">
-      <router-link to='/home' type="button">
-        <img alt="Vue logo" src="@/assets/LogoWindigo-preview.png" />
-      </router-link>
-    </div>
-    <div class="container-header">
-      <div class="wrapper">
-        <div class="greetings">
-          <!-- <h1 class="green">{{ msg }}</h1> -->
-          <h3>
-            <router-link to='/Boutique' type="button">
-              <a href="#" class="nav-item is-active" target="_blank" rel="noopener">BOUTIQUE</a>
-            </router-link>
-            <router-link to='/Ateliers' type="button">
-              <a href="#" class="nav-item" target="_blank" rel="noopener">ATELIERS</a>
-            </router-link>
-            <router-link to='/PortFolio' type="button">
-              <a href="#" class="nav-item">PORT-FOLIO</a>
-            </router-link>
-            <router-link to='/About' type="button">
-              <a href="#" class="nav-item" data-active-color="black" data-target="AboutView">A PROPOS</a>
-            </router-link>
-            <span class="nav-indicator"></span>
-          </h3>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary" style="width: 100%;">
+      <div class="container-fluid">
+        <div class="logo">
+          <RouterLink to="/home">
+            <img alt="Vue logo" src="@/assets/LogoWindigo-preview.png" />
+          </RouterLink>
         </div>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <RouterLink to="/boutique">BOUTIQUE</RouterLink>
+            </li>
+            <li class="nav-item">
+              <RouterLink to="/ateliers">ATELIERS</RouterLink>
+            </li>
+            <li class="nav-item">
+              <RouterLink to="/">PORTFOLIO</RouterLink>
+            </li>
+            <li class="nav-item">
+              <RouterLink to="/">A PROPOS</RouterLink>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Utilisateur connecté -->
+        <div v-if="isLogged" class="d-flex align-items-center">
+          <span class="me-2">Bienvenue {{ user.email }}</span>
+          <RouterLink to="/panier">
+            <span class="badge bg-secondary me-2">
+              Panier: {{ cartCount }}
+            </span>
+          </RouterLink>
+          <button type="button" class="btn btn-outline-secondary" @click="logout">
+            Déconnexion
+          </button>
+        </div>
+
+        <!-- Utilisateur non connecté -->
+        <RouterLink v-else to="/login" type="button" class="btn btn-outline-secondary">
+          <img src="@/assets/account.svg" alt="Login" />
+        </RouterLink>
       </div>
-    </div>
-    <nav class="nav-auth">
-      <div v-if="User.isLogged">
-        <!-- <router-link to='/product-create' v-if="User.isLogged">Créer</router-link> | -->
-        <span>{{ User.user.email }}</span>
-      </div>
-      <router-link to='/login' type="button" class="btn btn-outline-secondary" v-if="!User.isLogged"><img
-          src="@/assets/account.svg" /></router-link>
-      <button type="button" class="btn btn-outline-secondary" @click="AuthService.logout()"
-        v-if="User.isLogged">Déconnexion</button>
     </nav>
   </header>
-  <RouterView />
+
+  <main>
+    <RouterView />
+  </main>
 
   <footer>
     <div class="container-footer">
@@ -112,6 +136,7 @@ const Product = useProductStore();
   </footer>
 </template>
 
+
 <style scoped>
 /*Gestion du header*/
 header {
@@ -124,7 +149,13 @@ header {
   align-items: center;
   display: flex;
   flex-direction: row;
-  padding: 1rem;
+  position: fixed;
+  top: 0;
+}
+
+main {
+  margin-top: 15%;
+  /* ou padding-top */
 }
 
 .nav-item {
@@ -412,32 +443,13 @@ nav a {
   display: inline-block;
   padding: 0 1rem;
   border-left: 1px solid var(--color-border);
+  font-family: "Oswald", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 200;
+  font-style: normal;
 }
 
 nav a:first-of-type {
   border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-
-  }
-
-  nav {
-    text-align: center;
-    font-size: 1rem;
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
 }
 </style>
