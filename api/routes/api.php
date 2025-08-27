@@ -88,8 +88,8 @@ Route::controller(CartController::class)->prefix('carts')->group(function () {
     Route::post('set', 'set');
     Route::post('add/{product_id}', 'add');
     Route::post('remove/{product_id}', 'remove');
-    Route::post('delete/{product_id}', 'delete');
-    Route::post('clear', 'clear');
+    Route::delete('delete/{product_id}', 'delete');
+    Route::delete('clear', 'clear');
 });
 
 // Gestion des commandes
