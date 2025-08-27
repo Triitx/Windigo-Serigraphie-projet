@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->references('id')->on('users');
             $table->decimal('total', 10, 2);
-            $table->string('status')->default('pending');
+            $table->string('status')->default('en attente');
             $table->timestamps();
         });
     }

@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CustomerReviewController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController as ControllersProductController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\UserController;
@@ -36,7 +37,7 @@ Route::controller(ForgotPasswordController::class)->group(function () {
     Route::post('/password-reset', 'reset');
 });
 
-//Routes CRUD users
+//Gestion des utilisateurs
 Route::controller(UserController::class)->prefix('users')->group(function () {
     Route::get('', 'index');
     Route::get('/{user}', 'show');
@@ -53,7 +54,6 @@ Route::controller(ControllersProductController::class)->prefix('products')->grou
 });
 
 //Gestion des sessions
-
 Route::controller(WorkshopSessionController::class)->prefix('workshops')->group(function () {
 Route::post('/{workshop}/sessions', 'store');
 Route::put('/{workshop}/sessions/{id}', 'update');
@@ -92,7 +92,15 @@ Route::controller(CartController::class)->prefix('carts')->group(function () {
     Route::post('clear', 'clear');
 });
 
-
+// Gestion des commandes
+Route::controller(OrderController::class)->prefix('orders')->group(function() {
+Route::post('/checkout/{userId}', 'checkoutFromCart');
+Route::get('', 'index');
+Route::get('/{id}', 'show');
+Route::post('', 'store');
+Route::patch('/{id}/status', 'updateStatus');
+Route::delete('/{id}', 'destroy');
+});
 
 //Routes Admin
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {

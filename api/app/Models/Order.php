@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -31,5 +30,17 @@ class Order extends Model
     public function items()
     {
         return $this->hasMany(OrderProduct::class);
+    }
+
+    public function updateStatus(string $newStatus): bool
+    {
+        $allowedStatuses = ['pending', 'paid', 'shipped', 'cancelled'];
+
+        if (!in_array($newStatus, $allowedStatuses)) {
+            throw new \InvalidArgumentException("Statut invalide : $newStatus");
+        }
+
+        $this->status = $newStatus;
+        return $this->save();
     }
 }
