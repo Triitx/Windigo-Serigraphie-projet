@@ -21,52 +21,64 @@ function logout() {
 </script>
 
 <template>
-  <header>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary" style="width: 100%;">
-      <div class="container-fluid">
-        <div class="logo">
-          <RouterLink to="/home">
-            <img alt="Vue logo" src="@/assets/LogoWindigo-preview.png" />
-          </RouterLink>
-        </div>
-
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-              <RouterLink to="/boutique">BOUTIQUE</RouterLink>
-            </li>
-            <li class="nav-item">
-              <RouterLink to="/ateliers">ATELIERS</RouterLink>
-            </li>
-            <li class="nav-item">
-              <RouterLink to="/">PORTFOLIO</RouterLink>
-            </li>
-            <li class="nav-item">
-              <RouterLink to="/">A PROPOS</RouterLink>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Utilisateur connecté -->
-        <div v-if="isLogged" class="d-flex align-items-center">
-          <span class="me-2">Bienvenue {{ user.email }}</span>
-          <RouterLink to="/panier">
-            <span class="badge bg-secondary me-2">
-              Panier: {{ cartStore.totalQuantity }}
-            </span>
-          </RouterLink>
-          <button type="button" class="btn btn-outline-secondary" @click="logout">
-            Déconnexion
-          </button>
-        </div>
-
-        <!-- Utilisateur non connecté -->
-        <RouterLink v-else to="/login" type="button" class="btn btn-outline-secondary">
-          <img src="@/assets/account.svg" alt="Login" />
+<header>
+  <nav class="navbar navbar-expand-lg bg-body-tertiary" style="width: 100%;">
+    <div class="container-fluid">
+      <div class="logo">
+        <RouterLink to="/home">
+          <img alt="Vue logo" src="@/assets/LogoWindigo-preview.png" />
         </RouterLink>
       </div>
-    </nav>
-  </header>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <RouterLink to="/boutique">BOUTIQUE</RouterLink>
+          </li>
+          <li class="nav-item">
+            <RouterLink to="/ateliers">ATELIERS</RouterLink>
+          </li>
+          <li class="nav-item">
+            <RouterLink to="/">PORTFOLIO</RouterLink>
+          </li>
+          <li class="nav-item">
+            <RouterLink to="/">A PROPOS</RouterLink>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Utilisateur connecté -->
+      <div v-if="isLogged" class="d-flex align-items-center">
+        <span class="me-2">Bienvenue {{ user.email }}</span>
+
+<!-- Bouton panel admin, visible uniquement pour l'admin -->
+<RouterLink
+  v-if="user && user.role === 'ROLE_ADMIN'"
+  to="/admin"
+  class="btn btn-warning me-2"
+>
+  Panel Admin
+</RouterLink>
+
+        <RouterLink to="/panier">
+          <span class="badge bg-secondary me-2">
+            Panier: {{ cartStore.totalQuantity }}
+          </span>
+        </RouterLink>
+
+        <button type="button" class="btn btn-outline-secondary" @click="logout">
+          Déconnexion
+        </button>
+      </div>
+
+      <!-- Utilisateur non connecté -->
+      <RouterLink v-else to="/login" type="button" class="btn btn-outline-secondary">
+        <img src="@/assets/account.svg" alt="Login" />
+      </RouterLink>
+    </div>
+  </nav>
+</header>
+
 
   <main>
     <RouterView />

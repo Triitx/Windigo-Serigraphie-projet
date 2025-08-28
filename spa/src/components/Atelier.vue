@@ -36,7 +36,7 @@ const formatDate = (dateStr: string) => {
             <h6 class="card-subtitle mb-2 text-muted">{{ workshop.type }}</h6>
             <p class="card-text mb-1"><strong>Prix :</strong> {{ workshop.price }} €</p>
             <p class="card-text mb-2"><strong>Durée :</strong> {{ workshop.duration }} min</p>
-            <p class="card-text mb-2"><strong>Âge :</strong> {{ workshop.age }} ans</p>
+            <p class="card-text mb-2"><strong>Âge minimum :</strong> {{ workshop.age }} ans</p>
 
             <!-- Sessions -->
             <div v-if="workshop.workshopSessions?.length" class="mt-auto">
