@@ -67,6 +67,11 @@ Route::controller(ControllersProductController::class)->prefix('products')->grou
 });
 
 //Gestion des sessions
+
+Route::prefix('workshops')->group(function () {
+    Route::get('', [WorkshopController::class, 'index']); // liste des ateliers
+    Route::get('/{workshop}', [WorkshopController::class, 'show']); // détail d’un atelier
+  });  
 Route::controller(WorkshopSessionController::class)->prefix('workshops')->group(function () {
     Route::post('/{workshop}/sessions', 'store');
     Route::put('/{workshop}/sessions/{id}', 'update');

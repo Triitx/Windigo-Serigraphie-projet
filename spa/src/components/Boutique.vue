@@ -37,10 +37,10 @@ async function handleAddToCart(productId: number) {
       <div v-for="product in productStore.products" :key="product.id" class="col-md-4 mb-4">
         <div class="card h-100 p-3 shadow-sm">
           <div v-if="product.picture" class="mb-2">
-            <img :src="product.picture" :alt="product.name" class="img-fluid rounded" />
+            <img :src="product.picture_url" :alt="product.name" class="img-fluid rounded" />
           </div>
           <h5 class="card-title">{{ product.name }}</h5>
-          <p class="card-text">{{ product.description }}</p>
+          <!-- <p class="card-text">{{ product.description }}</p> -->
           <p class="fw-bold">{{ product.price }} €</p>
           <p v-if="product.stock !== undefined">Stock : {{ product.stock }}</p>
 

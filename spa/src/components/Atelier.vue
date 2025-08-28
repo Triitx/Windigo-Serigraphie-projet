@@ -1,74 +1,71 @@
 <script setup lang="ts">
+import { onMounted } from 'vue';
+import { useWorkshopStore } from '@/stores/Workshop';
 
+const workshopStore = useWorkshopStore();
+
+onMounted(() => {
+  workshopStore.fetchWorkshops();
+});
+
+const formatDate = (dateStr: string) => {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('fr-FR', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
+};
 </script>
 
 <template>
+  <div class="container my-5">
+    <h2 class="mb-4 text-center">Nos Ateliers</h2>
 
-  <body>
-    <div class="atelier-container">
-      <div class="atelier">
-        <div class="atelier-info">
-          <div class="card">
-            <h5 class="card-header text-center">TEXTILE</h5>
-            <img src="@/assets/atelier1.png" class="card-img-top" alt="Card image cap">
-            <div class="card-body">
-              <p class="card-text">Durant cet atelier vous réaliserez une impression en une couleur sur un support
-                textile, tote-bag ou t-shirt au choix, qui vous sera fourni, vous pourrez apporter votre propre support
-                textile si vous le désirez.
-                Vous choisirez d’abord votre motif à imprimer parmi une sélection de visuels.
-                La seconde étape consistera à préparer et caler votre motif sur la presse.
-                L’étape suivante sera celle de la préparation de votre couleur, vous pourrez choisir parmi des couleurs
-                primaires ou faire votre propre mélange.
-                Arrive enfin l’étape cruciale de l’impression où vous réaliserez votre première sérigraphie textile.
-                Vous repartirez avec votre t-shirt ou tote-bag imprimé par vos soins !</p>
-              <div class="d-grid gap-2 col-8 mx-auto">
-                <a href="#" class="btn btn-primary">Reserver une place pour cet atelier</a>
-              </div>
-            </div>
-          </div>
-        </div>
+    <div v-if="workshopStore.loading" class="text-center my-5">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Chargement...</span>
       </div>
-      <div class="atelier">
-        <div class="atelier-info">
-          <div class="card">
-            <h5 class="card-header text-center">PAPIER</h5>
-            <img src="@/assets/atelier2.png" class="card-img-top" alt="Card image cap">
-            <div class="card-body">
-              <p class="card-text">Durant cet atelier, vous réaliserez une impression en deux couleurs
-                  sur un support papier.Vous aurez le choix entre imprimer une affiche A3 ou une série de cartes. Vous
-                  choisirez d’abord votre motif à imprimer parmi une sélection de visuels.La seconde étape sera celle de
-                  la préparation de vos couleurs, vous pourrez choisir parmi des couleurs primaires ou créer vos propres
-                  couleurs.L’étape suivante consistera à préparer et caler la première couleur de votre motif sur la
-                  presse.Arrive ensuite l’étape cruciale de l’impression où vous réaliserez votre première sérigraphie
-                  papier.Vous répéterez le processus de calage puis imprimerez votre seconde couleur pour finaliser
-                  votre sérigraphie papier.Vous repartirez avec votre affiche A3 ou vos cartes imprimées par vos soins
-                  !</p>
-              <div class="d-grid gap-2 col-8 mx-auto">
-                <a href="#" class="btn btn-primary">Reserver une place pour cet atelier</a>
-              </div>
+    </div>
+
+    <div v-else-if="workshopStore.error" class="alert alert-danger text-center">
+      {{ workshopStore.error }}
+    </div>
+
+    <div v-else class="row g-4">
+      <div v-for="workshop in workshopStore.workshops" :key="workshop.id" class="col-12 col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">{{ workshop.name }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">{{ workshop.type }}</h6>
+            <p class="card-text mb-1"><strong>Prix :</strong> {{ workshop.price }} €</p>
+            <p class="card-text mb-2"><strong>Durée :</strong> {{ workshop.duration }} min</p>
+            <p class="card-text mb-2"><strong>Âge :</strong> {{ workshop.age }} ans</p>
+
+            <!-- Sessions -->
+            <div v-if="workshop.workshopSessions?.length" class="mt-auto">
+              <h6>Sessions :</h6>
+              <ul class="list-group list-group-flush">
+                <li v-for="session in workshop.workshopSessions" :key="session.id" class="list-group-item d-flex justify-content-between align-items-center">
+                  {{ formatDate(session.date) }} - N°{{ session.session_number }}
+                  <span class="badge bg-primary rounded-pill">{{ session.capacity }} places</span>
+                </li>
+              </ul>
             </div>
+
+            <button class="btn btn-primary mt-3 w-100" :disabled="!workshop.workshopSessions?.length">
+              Réserver
+            </button>
           </div>
-        </div>
-      </div>
-      <div class="formulaire">
-        <div class="mb-3">
-          <label for="exampleFormControlInput1" class="form-label">Email address</label>
-          <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
-        </div>
-        <div class="mb-3">
-          <label for="exampleFormControlTextarea1" class="form-label">Demande</label>
-          <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
         </div>
       </div>
     </div>
-  </body>
+  </div>
 </template>
 
 <style scoped>
-.atelier-container {
-  display: grid;
-  grid-template-columns: 2fr 2fr 1fr;
-  gap: 1vw;
-  margin: 1vw;
+.card {
+  border-radius: 12px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
 }
 </style>
