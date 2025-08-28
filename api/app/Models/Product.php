@@ -21,6 +21,7 @@ class Product extends Model
     'category_id',
     'picture'
   ];
+  
 
   static public function search(string $name = null, string $minPrice = null, string $maxPrice = null, string $option = null, string $category = null, int $page = null, int $limit = null)
   {
@@ -72,13 +73,14 @@ class Product extends Model
       ->withPivot('quantity', 'price');
   }
 
-  public function categories()
-  {
+public function category()
+{
     return $this->belongsTo(Category::class);
-  }
+}
 
-  public function options()
-  {
+public function option()
+{
     return $this->belongsTo(Option::class);
-  }
+}
+
 }

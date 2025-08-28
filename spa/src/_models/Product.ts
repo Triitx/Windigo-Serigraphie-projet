@@ -8,9 +8,10 @@ export interface Product {
   stock: number
   description: string
   archived: boolean
-  picture?: string | null
+  picture: string | File | null   // <-- accepte string (backend) ou File (upload)
 
   // Relations
   category?: Category
   option?: Option
+  picture_url?: string;
 }

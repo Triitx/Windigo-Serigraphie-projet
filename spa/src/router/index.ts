@@ -9,6 +9,7 @@ import ProductForm from '@/components/ProductForm.vue';
 import ProductList from '@/components/ProductList.vue';
 import { useUserStore } from '@/stores/User';
 import Panier from '@/components/Panier.vue';
+import { fetchUser } from '@/_services/AuthService';
 
 
 const router = createRouter({
@@ -36,7 +37,7 @@ const router = createRouter({
       name: 'panier',
       component: Panier
     },
-    
+
     {
       path: '/ateliers',
       name: 'ateliers',
@@ -58,22 +59,31 @@ const router = createRouter({
       path: '/admin',
       name: 'admin.dashboard',
       component: DashboardAdmin,
-        // meta: { role: 'admin' }
-    },
+      meta: { role: 'ROLE_ADMIN' }
+    }
+
   ]
 });
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore();
+
+  // Si fetchUser n'a pas été appelé, tu peux le forcer ici
+  if (!userStore.user.email) {
+    await fetchUser();
+  }
+
   const role = userStore.user.role;
-  
+
   if (!to.meta.role) {
     return next();
   }
-  else if (role == to.meta.role) {
+
+  if (role === to.meta.role) {
     return next();
   }
 
-  router.push('/login');
+  // Sinon redirige vers login
+  return next('/login');
 });
 
 export default router

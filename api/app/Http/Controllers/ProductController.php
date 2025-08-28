@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\File;
 
 class ProductController extends Controller
 {
-          /**
+    /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
@@ -35,7 +35,7 @@ class ProductController extends Controller
             'description' => 'required|string',
             'archived' => 'required|integer',
             'option_id' => 'required|exists:options,id',
-            'category_id'=> 'required|exists:categories,id',
+            'category_id' => 'required|exists:categories,id',
             'picture' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
         ]);
 
@@ -55,10 +55,11 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Product $product)
+    public function show($id)
     {
-        return response()->json($product);
+        return Product::with(['category', 'option'])->findOrFail($id);
     }
+
 
     /**
      * Update the specified resource in storage.
@@ -72,20 +73,29 @@ class ProductController extends Controller
             'detail' => 'string',
             'archived' => 'integer',
             'option_id' => 'exists:options,id',
-            'category_id'=> 'exists:categories,id',
+            'category_id' => 'exists:categories,id',
             'picture' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
         ]);
 
-        $product->fill($formFields);
-        if ($request->file('picture') && File::exists(public_path('images/uploads/' . $product->avatar))) {
-            File::delete(public_path('images/uploads/' . $product->avatar));
+        // Suppression si l'utilisateur a supprimé l'image
+        if ($request->has('picture') && !$request->file('picture')) {
+            if (File::exists(public_path('images/uploads/' . $product->avatar))) {
+                File::delete(public_path('images/uploads/' . $product->avatar));
+            }
+            $product->avatar = null;
         }
 
+        // Si nouvel upload
         if ($request->file('picture')) {
+            if (File::exists(public_path('images/uploads/' . $product->avatar))) {
+                File::delete(public_path('images/uploads/' . $product->avatar));
+            }
             $fileName = time() . '_' . $request->picture->getClientOriginalName();
             $product->avatar = $fileName;
             $request->picture->move(public_path('images/uploads'), $fileName);
         }
+
+        $product->fill($formFields);
         $product->save();
         return response()->json($product);
     }
@@ -105,19 +115,19 @@ class ProductController extends Controller
 
     public function paginate(Request $request)
     {
-      $page = $request->query('page', 1);
-      $name = $request->query('name');
-      $minPrice = $request->query('minPrice');
-      $maxPrice = $request->query('maxPrice');
-      $option = $request->query('option_id');
-      $category = $request->query('category_id');
-      $limit = 3;
-      $results = Product::search($name, $minPrice, $maxPrice, $option, $category, /*$page, $limit*/);
-      $maxPages = ceil($results['totalResults'] / $limit);
-      return response()->json([
-        'products' => $results['products'],
-        'maxPages' => $maxPages,
-        'page' => $page
-      ]);
+        $page = $request->query('page', 1);
+        $name = $request->query('name');
+        $minPrice = $request->query('minPrice');
+        $maxPrice = $request->query('maxPrice');
+        $option = $request->query('option_id');
+        $category = $request->query('category_id');
+        $limit = 3;
+        $results = Product::search($name, $minPrice, $maxPrice, $option, $category, /*$page, $limit*/);
+        $maxPages = ceil($results['totalResults'] / $limit);
+        return response()->json([
+            'products' => $results['products'],
+            'maxPages' => $maxPages,
+            'page' => $page
+        ]);
     }
 }

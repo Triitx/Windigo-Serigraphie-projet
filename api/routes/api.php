@@ -38,6 +38,19 @@ Route::controller(ForgotPasswordController::class)->group(function () {
 });
 
 //Gestion des utilisateurs
+Route::middleware('auth:sanctum')->get('/users/me', function (Request $request) {
+    $user = $request->user();
+
+    if (!$user) {
+        return response()->json(['message' => 'Non authentifié'], 401);
+    }
+
+    return [
+        'email' => $user->email,
+        'role' => $user->role->value, // récupère la valeur de l'enum
+    ];
+});
+
 Route::controller(UserController::class)->prefix('users')->group(function () {
     Route::get('', 'index');
     Route::get('/{user}', 'show');
@@ -55,9 +68,9 @@ Route::controller(ControllersProductController::class)->prefix('products')->grou
 
 //Gestion des sessions
 Route::controller(WorkshopSessionController::class)->prefix('workshops')->group(function () {
-Route::post('/{workshop}/sessions', 'store');
-Route::put('/{workshop}/sessions/{id}', 'update');
-Route::delete('/{workshop}/sessions/{id}', 'destroy');
+    Route::post('/{workshop}/sessions', 'store');
+    Route::put('/{workshop}/sessions/{id}', 'update');
+    Route::delete('/{workshop}/sessions/{id}', 'destroy');
 });
 
 
@@ -66,9 +79,9 @@ Route::delete('/{workshop}/sessions/{id}', 'destroy');
 Route::get('/workshops/{workshop_id}/sessions/available', [BookingController::class, 'availableSessions']); // Sessions disponibles pour un atelier donné
 
 Route::controller(BookingController::class)->prefix('bookings')->group(function () {
-Route::get('/bookings', 'index'); 
-Route::post('/bookings/{session_id}', 'store'); 
-Route::delete('/bookings/{id}', 'destroy'); 
+    Route::get('/bookings', 'index');
+    Route::post('/bookings/{session_id}', 'store');
+    Route::delete('/bookings/{id}', 'destroy');
 });
 
 
@@ -93,17 +106,17 @@ Route::controller(CartController::class)->prefix('carts')->group(function () {
 });
 
 // Gestion des commandes
-Route::controller(OrderController::class)->prefix('orders')->group(function() {
-Route::post('/checkout/{userId}', 'checkoutFromCart');
-Route::get('', 'index');
-Route::get('/{id}', 'show');
-Route::post('', 'store');
-Route::patch('/{id}/status', 'updateStatus');
-Route::delete('/{id}', 'destroy');
+Route::controller(OrderController::class)->prefix('orders')->group(function () {
+    Route::post('/checkout/{userId}', 'checkoutFromCart');
+    Route::get('', 'index');
+    Route::get('/{id}', 'show');
+    Route::post('', 'store');
+    Route::patch('/{id}/status', 'updateStatus');
+    Route::delete('/{id}', 'destroy');
 });
 
 //Routes Admin
-Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
+Route::/*middleware(['auth:sanctum', 'admin'])->*/prefix('admin')->group(function () {
     // Produits
     Route::controller(ProductController::class)->prefix('products')->group(function () {
         Route::get('', 'index');

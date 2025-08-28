@@ -7,7 +7,6 @@
         <tr>
           <th class="border px-2 py-1">ID</th>
           <th class="border px-2 py-1">Nom</th>
-          <th class="border px-2 py-1">Valeur</th>
           <th class="border px-2 py-1">Actions</th>
         </tr>
       </thead>

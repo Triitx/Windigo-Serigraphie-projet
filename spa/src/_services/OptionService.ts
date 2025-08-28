@@ -3,12 +3,12 @@ import type { Option } from '@/_models/Option'
 
 // PUBLIC
 export async function getOptions(): Promise<Option[]> {
-  const res = await Axios.get('api/options')
+  const res = await Axios.get('api/admin/options')
   return res.data.options ?? res.data
 }
 
 export async function getOption(id: number): Promise<Option> {
-  const res = await Axios.get(`api/options/${id}`)
+  const res = await Axios.get(`api/admin/options/${id}`)
   return res.data
 }
 

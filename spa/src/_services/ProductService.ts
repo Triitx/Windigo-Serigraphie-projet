@@ -1,12 +1,13 @@
+// _services/ProductService.ts
 import Axios from './CallerService';
 import type { Product } from '@/_models/Product';
 
 // -------------------
-// PUBLIC (BOUTIQUE)
+// PUBLIC (boutique)
 // -------------------
 export async function getProducts(): Promise<Product[]> {
   const res = await Axios.get('api/products');
-  return res.data.products;
+  return res.data.products; // <- clé "products"
 }
 
 export async function getProduct(id: number): Promise<Product> {
@@ -15,11 +16,11 @@ export async function getProduct(id: number): Promise<Product> {
 }
 
 // -------------------
-// ADMIN (BACK-OFFICE)
+// ADMIN (back-office)
 // -------------------
 export async function getAdminProducts(): Promise<Product[]> {
   const res = await Axios.get('api/admin/products');
-  return res.data;
+  return res.data; // ici pas de clé "products", ton contrôleur renvoie Product::all()
 }
 
 export async function getAdminProduct(id: number): Promise<Product> {
@@ -27,12 +28,13 @@ export async function getAdminProduct(id: number): Promise<Product> {
   return res.data;
 }
 
-export async function createAdminProduct(data: Product | FormData): Promise<Product> {
+// on accepte aussi un objet brut { name, price, stock, ... }
+export async function createAdminProduct(data: any): Promise<Product> {
   const res = await Axios.post('api/admin/products', data);
   return res.data;
 }
 
-export async function updateAdminProduct(id: number, data: Product | FormData): Promise<Product> {
+export async function updateAdminProduct(id: number, data: any): Promise<Product> {
   const res = await Axios.post(`api/admin/products/${id}?_method=PUT`, data);
   return res.data;
 }

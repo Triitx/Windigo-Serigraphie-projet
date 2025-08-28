@@ -3,12 +3,12 @@ import type { Category } from '@/_models/Category'
 
 // PUBLIC
 export async function getCategories(): Promise<Category[]> {
-  const res = await Axios.get('api/categories')
-  return res.data.categories ?? res.data
+  const res = await Axios.get('api/admin/categories')
+  return res.data
 }
 
 export async function getCategory(id: number): Promise<Category> {
-  const res = await Axios.get(`api/categories/${id}`)
+  const res = await Axios.get(`api/admin/categories/${id}`)
   return res.data
 }
 

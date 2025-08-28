@@ -9,15 +9,25 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-    public function index()
-    {
-        return Product::all();
-    }
+public function index()
+{
+    $products = Product::with(['category', 'option'])->get();
 
-    public function show($id)
-    {
-        return Product::with(['categories', 'options'])->findOrFail($id);
-    }
+    // Ajouter dynamiquement l'URL complète de l'image
+    $products = $products->map(function ($product) {
+        $product->picture_url = $product->picture ? asset('storage/' . $product->picture) : null;
+        return $product;
+    });
+
+    return response()->json($products);
+}
+
+public function show($id)
+{
+    $product = Product::with(['category', 'option'])->findOrFail($id);
+    $product->picture_url = $product->picture ? asset('storage/' . $product->picture) : null;
+    return response()->json($product);
+}
 
     public function store(Request $request)
     {

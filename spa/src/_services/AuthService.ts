@@ -17,6 +17,20 @@ export async function login(credentials: { email: string, password: string }): P
       });
 }
 
+export async function fetchUser() {
+  const userStore = useUserStore();
+
+  try {
+    const res = await Axios.get('/api/users/me', { withCredentials: true });
+    userStore.setUser({
+      email: res.data.email,
+      role: res.data.role
+    });
+  } catch {
+    userStore.clearUser();
+  }
+}
+
 export async function logout() {
     await Axios.get('/logout');
 
