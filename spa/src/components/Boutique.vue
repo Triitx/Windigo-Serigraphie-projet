@@ -1,32 +1,31 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import { useProductStore } from '@/stores/Product'
-import { useCartStore } from '@/stores/Cart'
-import { getProducts } from '@/_services/ProductService'
-import { setCart } from '@/_services/CartService'
+import { onMounted, ref } from 'vue';
+import { useProductStore } from '@/stores/Product';
+import { useCartStore } from '@/stores/Cart';
+import { getProducts } from '@/_services/ProductService';
+import { setCart } from '@/_services/CartService';
 
-const productStore = useProductStore()
-const cartStore = useCartStore()
-
-const quantities = ref<{ [key: number]: number }>({})
+const productStore = useProductStore();
+const cartStore = useCartStore();
+const quantities = ref<{ [key: number]: number }>({});
 
 onMounted(async () => {
   try {
-    const data = await getProducts()
-    productStore.setProducts(data)
-    data.forEach(p => quantities.value[p.id] = 1)
+    const data = await getProducts();
+    productStore.setProducts(data);
+    data.forEach(p => quantities.value[p.id] = 1);
   } catch (error) {
-    console.error('Erreur récupération produits :', error)
+    console.error('Erreur récupération produits :', error);
   }
-})
+});
 
 async function handleAddToCart(productId: number) {
   try {
-    const quantity = quantities.value[productId] || 1
-    await setCart(productId, quantity)
-    alert('Produit ajouté au panier !')
+    const quantity = quantities.value[productId] || 1;
+    await setCart(productId, quantity);
+    alert('Produit ajouté au panier !');
   } catch (error) {
-    console.error('Erreur ajout au panier :', error)
+    console.error('Erreur ajout au panier :', error);
   }
 }
 </script>

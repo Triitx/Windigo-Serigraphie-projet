@@ -4,7 +4,7 @@ import HomeView from '../views/HomeView.vue'
 import Register from '@/views/Register.vue';
 import Atelier from '@/components/Atelier.vue';
 import Boutique from '@/components/Boutique.vue';
-import DashboardAdmin from '@/views/DashboardAdmin.vue';
+import DashboardAdmin from '@/views/admin/DashboardAdmin.vue';
 import ProductForm from '@/components/ProductForm.vue';
 import ProductList from '@/components/ProductList.vue';
 import { useUserStore } from '@/stores/User';
@@ -57,29 +57,14 @@ const router = createRouter({
     {
       path: '/admin',
       name: 'admin.dashboard',
-      component: DashboardAdmin
-    },
-
-    { 
-      path: '/admin/products', 
-      name: 'product-list', 
-      component: ProductList 
-    },
-    { 
-      path: '/admin/products/create', 
-      name: 'product-create', 
-      component: ProductForm
-    },
-    { 
-      path: '/admin/products/:id/edit', 
-      name: 'product-edit', 
-      component: ProductForm 
+      component: DashboardAdmin,
+        // meta: { role: 'admin' }
     },
   ]
 });
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore();
-  const role = userStore.role;
+  const role = userStore.user.role;
   
   if (!to.meta.role) {
     return next();

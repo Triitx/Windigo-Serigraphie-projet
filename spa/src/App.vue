@@ -18,9 +18,6 @@ function logout() {
     window.location.href = '/login'
   })
 }
-
-// Calcul du total d'articles dans le panier
-const cartCount = () => cartStore.items.reduce((total, item) => total + item.quantity, 0)
 </script>
 
 <template>
@@ -55,7 +52,7 @@ const cartCount = () => cartStore.items.reduce((total, item) => total + item.qua
           <span class="me-2">Bienvenue {{ user.email }}</span>
           <RouterLink to="/panier">
             <span class="badge bg-secondary me-2">
-              Panier: {{ cartCount }}
+              Panier: {{ cartStore.totalQuantity }}
             </span>
           </RouterLink>
           <button type="button" class="btn btn-outline-secondary" @click="logout">
