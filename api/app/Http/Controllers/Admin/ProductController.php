@@ -9,25 +9,29 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-public function index()
-{
-    $products = Product::with(['category', 'option'])->get();
+    public function index()
+    {
+        $products = Product::with(['category', 'option'])->get();
 
-    // Ajouter dynamiquement l'URL complète de l'image
-    $products = $products->map(function ($product) {
-        $product->picture_url = $product->picture ? asset('storage/' . $product->picture) : null;
-        return $product;
-    });
+        // Ajouter dynamiquement l'URL complète de l'image
+        $products->each(function ($product) {
+            $product->picture_url = $product->picture 
+                ? asset('storage/' . $product->picture) 
+                : null;
+        });
 
-    return response()->json($products);
-}
+        return response()->json($products);
+    }
 
-public function show($id)
-{
-    $product = Product::with(['category', 'option'])->findOrFail($id);
-    $product->picture_url = $product->picture ? asset('storage/' . $product->picture) : null;
-    return response()->json($product);
-}
+    public function show($id)
+    {
+        $product = Product::with(['category', 'option'])->findOrFail($id);
+        $product->picture_url = $product->picture 
+            ? asset('storage/' . $product->picture) 
+            : null;
+
+        return response()->json($product);
+    }
 
     public function store(Request $request)
     {
@@ -41,14 +45,19 @@ public function show($id)
             'category_id' => 'required|exists:categories,id',
             'picture' => 'nullable|image|max:2048'
         ]);
-        $product = new Product();
-        $product->fill($validated);
 
+        // Gestion de l'image
         if ($request->hasFile('picture')) {
             $validated['picture'] = $request->file('picture')->store('products', 'public');
         }
 
         $product = Product::create($validated);
+
+        // Ajouter l'URL complète de l'image
+        $product->picture_url = $product->picture 
+            ? asset('storage/' . $product->picture) 
+            : null;
+
         return response()->json($product, 201);
     }
 
@@ -67,14 +76,21 @@ public function show($id)
             'picture' => 'nullable|image|max:2048'
         ]);
 
+        // Gestion de la nouvelle image
         if ($request->hasFile('picture')) {
-            if ($product->picture) {
+            if ($product->picture && Storage::disk('public')->exists($product->picture)) {
                 Storage::disk('public')->delete($product->picture);
             }
             $validated['picture'] = $request->file('picture')->store('products', 'public');
         }
 
         $product->update($validated);
+
+        // Ajouter l'URL complète de l'image
+        $product->picture_url = $product->picture 
+            ? asset('storage/' . $product->picture) 
+            : null;
+
         return response()->json($product);
     }
 
@@ -82,11 +98,12 @@ public function show($id)
     {
         $product = Product::findOrFail($id);
 
-        if ($product->picture) {
+        if ($product->picture && Storage::disk('public')->exists($product->picture)) {
             Storage::disk('public')->delete($product->picture);
         }
 
         $product->delete();
+
         return response()->json(['message' => 'Produit supprimé']);
     }
 }

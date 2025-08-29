@@ -10,7 +10,7 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        return Category::all();
+        return response()->json(Category::all());
     }
 
     public function store(Request $request)
@@ -19,41 +19,35 @@ class CategoryController extends Controller
             'name' => 'required|string',
         ]);
 
+        $category = Category::create($formFields);
 
-        $category = new Category();
-        $category->fill($formFields);
-        $category->save();
         return response()->json($category);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show($id)
     {
-        return Category::findOrFail($id);
+        $category = Category::findOrFail($id);
+        return response()->json($category);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Category $category)
+    public function update(Request $request, $id)
     {
         $formFields = $request->validate([
             'name' => 'string',
         ]);
 
+        $category = Category::findOrFail($id);
         $category->fill($formFields);
         $category->save();
+
         return response()->json($category);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Category $category)
+    public function destroy($id)
     {
+        $category = Category::findOrFail($id);
         $category->delete();
-        return response()->json(['success' => 'success']);
+
+        return response()->json(['success' => true]);
     }
 }

@@ -4,461 +4,325 @@ import * as AuthService from './_services/AuthService.ts'
 import { useUserStore } from '@/stores/User'
 import { useCartStore } from '@/stores/Cart'
 import { storeToRefs } from 'pinia'
+import { onMounted, ref } from 'vue'
 
 const userStore = useUserStore()
 const cartStore = useCartStore()
 
-// Déstructuration réactive du store
 const { user, isLogged } = storeToRefs(userStore)
+const footerVisible = ref(false)
 
-// Fonction de déconnexion
 function logout() {
   AuthService.logout().then(() => {
-    userStore.clearUser() // reset le store
+    userStore.clearUser()
     window.location.href = '/login'
   })
 }
+
+// Pour détecter si le footer est visible
+onMounted(() => {
+  const observer = new IntersectionObserver(
+    ([entry]) => {
+      footerVisible.value = entry.isIntersecting
+    },
+    { threshold: 0.1 }
+  )
+  const footer = document.querySelector('footer')
+  if (footer) observer.observe(footer)
+})
 </script>
 
 <template>
-<header>
-  <nav class="navbar navbar-expand-lg bg-body-tertiary" style="width: 100%;">
-    <div class="container-fluid">
-      <div class="logo">
-        <RouterLink to="/home">
-          <img alt="Vue logo" src="@/assets/LogoWindigo-preview.png" />
-        </RouterLink>
-      </div>
-
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <RouterLink to="/boutique">BOUTIQUE</RouterLink>
-          </li>
-          <li class="nav-item">
-            <RouterLink to="/ateliers">ATELIERS</RouterLink>
-          </li>
-          <li class="nav-item">
-            <RouterLink to="/">PORTFOLIO</RouterLink>
-          </li>
-          <li class="nav-item">
-            <RouterLink to="/">A PROPOS</RouterLink>
-          </li>
-        </ul>
-      </div>
-
-      <!-- Utilisateur connecté -->
-      <div v-if="isLogged" class="d-flex align-items-center">
-        <span class="me-2">Bienvenue {{ user.email }}</span>
-
-<!-- Bouton panel admin, visible uniquement pour l'admin -->
-<RouterLink
-  v-if="user && user.role === 'ROLE_ADMIN'"
-  to="/admin"
-  class="btn btn-warning me-2"
->
-  Panel Admin
-</RouterLink>
-
-        <RouterLink to="/panier">
-          <span class="badge bg-secondary me-2">
-            Panier: {{ cartStore.totalQuantity }}
-          </span>
+  <div id="app">
+    <!-- HEADER -->
+    <header class="sticky-header">
+      <div class="header-container">
+        <RouterLink to="/home" class="logo">
+          <img src="@/assets/LogoWindigo-preview.png" alt="Logo Windigo" />
         </RouterLink>
 
-        <button type="button" class="btn btn-outline-secondary" @click="logout">
-          Déconnexion
-        </button>
-      </div>
+        <nav class="nav-links">
+          <RouterLink to="/boutique">BOUTIQUE</RouterLink>
+          <RouterLink to="/ateliers">ATELIERS</RouterLink>
+          <RouterLink to="/">PORTFOLIO</RouterLink>
+          <RouterLink to="/">A PROPOS</RouterLink>
+        </nav>
 
-      <!-- Utilisateur non connecté -->
-      <RouterLink v-else to="/login" type="button" class="btn btn-outline-secondary">
-        <img src="@/assets/account.svg" alt="Login" />
-      </RouterLink>
-    </div>
-  </nav>
-</header>
-
-
-  <main>
-    <RouterView />
-  </main>
-
-  <footer>
-    <div class="container-footer">
-      <div class="container-left">
-        <div class="container-res">
-          <div class="icon facebook">
-            <span class="tooltip">Facebook</span>
-            <a href="https://www.facebook.com/windigo.serigraphie">
-              <svg viewBox="0 0 320 512" height="1.2em" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z">
-                </path>
-              </svg>
-            </a>
+        <div class="user-actions">
+          <div v-if="isLogged" class="logged-in">
+            <span>Bienvenue {{ user.email }}</span>
+            <RouterLink v-if="user && user.role === 'ROLE_ADMIN'" to="/admin" class="btn btn-warning">Panel Admin</RouterLink>
+            <RouterLink to="/panier">
+              <span class="badge bg-secondary">Panier: {{ cartStore.totalQuantity }}</span>
+            </RouterLink>
+            <button type="button" class="btn btn-outline-secondary" @click="logout">Déconnexion</button>
           </div>
-          <div class="icon instagram">
-            <span class="tooltip">Instagram</span>
-            <a href="https://www.instagram.com/windigo.serigraphie/">
-              <svg xmlns="http://www.w3.org/2000/svg" height="1.2em" fill="currentColor" class="bi bi-instagram"
-                viewBox="0 0 16 16">
-                <path
-                  d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.911 3.911 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0h.003zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.478 2.478 0 0 1-.92-.598 2.48 2.48 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233 0-2.136.008-2.388.046-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334z">
-                </path>
-              </svg>
-            </a>
-          </div>
-          <div class="container-copyright">
-            <h6> Les photos sont des propriétés intellectuelles, toute reproduction est interdite.
-            </h6>
-          </div>
-        </div>
-
-      </div>
-      <div class="container-coordonnées">
-        <div class="adresse">
-          <div class="Windigo-serigraphie">WINDIGO-SERIGRAPHIE</div>
-          <div class="localisation">
-            <h6>6 rue des acacias</h6>
-            <h6>72000 LE MANS</h6>
-          </div>
+          <RouterLink v-else to="/login" class="btn btn-outline-secondary">
+            <img src="@/assets/account.svg" alt="Login" />
+          </RouterLink>
         </div>
       </div>
-      <div class="container-right">
-        <div class="telephone">
-          <h6>06 XX XX XX XX</h6>
-          <h6>02 XX XX XX XX</h6>
+    </header>
+
+    <!-- MAIN -->
+    <main>
+      <RouterView />
+    </main>
+
+    <!-- FOOTER -->
+    <footer :class="{ 'fade-in': footerVisible }">
+      <div class="footer-container">
+        <div class="footer-section socials">
+          <a href="https://www.facebook.com/windigo.serigraphie" target="_blank" rel="noopener noreferrer" class="icon facebook">
+            <div class="tooltip">Facebook</div>
+            <svg viewBox="0 0 320 512" height="1.2em" fill="currentColor">
+              <path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 
+                12.42-50.06 52.24-50.06h40.42V6.26S260.43 
+                0 225.36 0c-73.22 0-121.08 44.38-121.08 
+                124.72v70.62H22.89V288h81.39v224h100.17V288z"/>
+            </svg>
+          </a>
+
+          <a href="https://www.instagram.com/windigo.serigraphie/" target="_blank" rel="noopener noreferrer" class="icon instagram">
+            <div class="tooltip">Instagram</div>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" height="1.2em" fill="currentColor">
+              <path d="M224.1 141c-63.6 0-114.9 51.3-114.9 
+                114.9s51.3 114.9 114.9 114.9S339 319.5 
+                339 255.9 287.7 141 224.1 141zm0 
+                189.6c-41.2 0-74.7-33.5-74.7-74.7 
+                s33.5-74.7 74.7-74.7 74.7 33.5 
+                74.7 74.7-33.5 74.7-74.7 
+                74.7zm146.4-194.3c0 14.9-12 26.9-26.9 
+                26.9s-26.9-12-26.9-26.9 12-26.9 
+                26.9-26.9 26.9 12 26.9 
+                26.9zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9S366.1 
+                9.7 330.2 8C293.9 6.3 282.6 6 
+                224 6s-69.9.3-106.2 2c-35.9 
+                1.7-67.7 9.9-93.9 36.2S9.7 
+                145.9 8 181.8C6.3 218.1 6 
+                229.4 6 288s.3 69.9 2 106.2c1.7 
+                35.9 9.9 67.7 36.2 93.9s58 
+                34.5 93.9 36.2c36.3 1.7 47.6 
+                2 106.2 2s69.9-.3 
+                106.2-2c35.9-1.7 67.7-9.9 
+                93.9-36.2s34.5-58 36.2-93.9c1.7-36.3 
+                2-47.6 2-106.2s-.3-69.9-2-106.2zM398.8 
+                388c-7.8 19.6-22.9 34.7-42.6 
+                42.6-29.5 11.7-99.5 9-132.2 
+                9s-102.7 2.6-132.2-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.2s-2.6-102.7 
+                9-132.2c7.8-19.6 22.9-34.7 
+                42.6-42.6 29.5-11.7 99.5-9 
+                132.2-9s102.7-2.6 
+                132.2 9c19.6 7.8 34.7 22.9 
+                42.6 42.6 11.7 29.5 9 99.5 
+                9 132.2s2.7 102.7-9 132.2z"/>
+            </svg>
+          </a>
         </div>
-        <div class="container-ancre">
-          <div class="ancre-nav">
-            <h6>Accueil</h6> |
-            <h6>Mon compte</h6>
+
+        <div class="footer-section contact">
+          <h5>WINDIGO-SÉRIGRAPHIE</h5>
+          <p>6 rue des Acacias<br/>72000 Le Mans</p>
+          <p>📞 06 XX XX XX XX<br/>📞 02 XX XX XX XX</p>
+        </div>
+
+        <div class="footer-section links">
+          <div class="footer-links">
+            <RouterLink to="/">Accueil</RouterLink> |
+            <RouterLink to="/login">Mon compte</RouterLink>
           </div>
-          <div class="ancre-legal">
-            <h6>Politique de confidientialité </h6> |
-            <h6>Mentions légales</h6>
+          <div class="footer-links">
+            <RouterLink to="/confidentialite">Politique de confidentialité</RouterLink> |
+            <RouterLink to="/mentions-legales">Mentions légales</RouterLink>
           </div>
         </div>
       </div>
-    </div>
-  </footer>
+
+      <div class="footer-bottom">
+        <p>© 2025 Windigo – Les photos sont des propriétés intellectuelles, toute reproduction est interdite.</p>
+      </div>
+    </footer>
+  </div>
 </template>
 
-
 <style scoped>
-/*Gestion du header*/
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200&display=swap');
+
+/* ================= HEADER ================= */
 header {
-  width: 100%;
-  height: auto;
-  background-color: #A88871;
-  line-height: 1.5;
-  max-height: 100vh;
-  justify-content: center;
-  align-items: center;
-  display: flex;
-  flex-direction: row;
   position: fixed;
   top: 0;
-}
-
-main {
-  margin-top: 15%;
-  /* ou padding-top */
-}
-
-.nav-item {
-  color: #000000;
-  font-family: arial, sans-serif;
-  font-size: 1vw;
-  padding: 1vw;
-  width: 100%;
-  margin: 0 6px;
-  position: relative;
-}
-
-.nav-item:before {
-  content: "";
-  position: absolute;
-  bottom: -2vw;
-  background-color: #dfe2ea;
-  height: 1vw;
-  padding: 0.5vw;
-  right: 0;
-  border-radius: 8px 8px 0 0;
   left: 0;
-  transition: .3s;
-}
-
-.nav-item:not(.is-active):hover:before {
-  bottom: 0;
-}
-
-.nav-item:not(.is-active):hover {
-  color: #333;
-}
-
-.nav-indicator {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  height: 5px;
-  transition: .4s;
-  border-radius: 8px 8px 0 0;
-}
-
-h1 {
-  font-weight: 500;
-  font-size: 2.6rem;
-  position: relative;
-  top: -10px;
-}
-
-h3 {
-  font-size: 1.2rem;
-  padding: 1vw;
   width: 100%;
+  background: #A88871;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  font-family: 'Oswald', sans-serif;
+  font-weight: 200; /* Extralight */
 }
 
-h3 a {
-  padding: 0 2rem;
-}
-
-.greetings h1,
-.greetings h3 {
-  text-align: center;
-}
-
-.container-header {
+.header-container {
+  max-width: 1200px;
   width: 100%;
   display: flex;
-  justify-content: center;
   align-items: center;
-}
-
-/*Fin gestion du header*/
-
-/*Gestion du footer*/
-footer {
-  text-align: center;
-  padding: 5px;
-  background-color: #A88871;
-  color: black;
-}
-
-.container-footer {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: row;
-}
-
-.container-left {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  flex: 1;
-}
-
-.container-res {
-  display: inline-flex;
-  list-style: none;
-  height: 120px;
-  width: 100%;
-  font-family: "Poppins", sans-serif;
-  justify-content: center;
-  align-items: center;
-}
-
-.container-res .icon {
-  position: relative;
-  background: #fff;
-  border-radius: 50%;
-  margin: 10px;
-  width: 50x;
-  min-width: 50px;
-  height: 50px;
-  font-size: 18px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-.container-res .tooltip {
-  position: absolute;
-  top: 0;
-  font-size: 14px;
-  background: #fff;
-  color: #fff;
-  padding: 5px 8px;
-  border-radius: 5px;
-  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
-  opacity: 0;
-  pointer-events: none;
-  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-.container-res .tooltip::before {
-  position: absolute;
-  content: "";
-  height: 8px;
-  width: 8px;
-  background: #fff;
-  bottom: -3px;
-  left: 50%;
-  transform: translate(-50%) rotate(45deg);
-  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-.container-res .icon:hover .tooltip {
-  top: -45px;
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-}
-
-.container-res .icon:hover span,
-.container-res .icon:hover .tooltip {
-  text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.1);
-}
-
-.container-res .facebook:hover,
-.container-res .facebook:hover .tooltip,
-.container-res .facebook:hover .tooltip::before {
-  background: #1877f2;
-  color: #fff;
-}
-
-.container-res .instagram:hover,
-.container-res .instagram:hover .tooltip,
-.container-res .instagram:hover .tooltip::before {
-  background: #e4405f;
-  color: #fff;
-}
-
-
-.container-copyright {
-  display: flex;
-  list-style: none;
-  height: 120px;
-  width: 100%;
-  justify-content: center;
-  align-items: center;
-  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-  justify-content: center;
-}
-
-.container-coordonnées {
-  width: 100%;
-  display: flex;
-  flex: 1;
-  justify-content: center;
-  align-items: center;
-  flex-direction: row;
-  margin: 0 10px;
-}
-
-.adresse {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
-
-.windigo-serigraphie {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.localisation {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
-
-.telephone {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
-
-.container-right {
-  display: flex;
-  flex-direction: row;
   justify-content: space-between;
-  flex: 1;
-}
-
-.container-ancre {
-  display: flex;
-  flex-direction: column;
-}
-
-.ancre-nav {
-  display: flex;
-}
-
-.ancre-legal {
-  display: flex;
-}
-
-/*Fin gestion du footer*/
-
-/*Gestion du logo*/
-.logo {
-  display: block;
-  width: 8%;
-  height: auto;
-  position: relative;
+  padding: 1rem 2rem;
 }
 
 .logo img {
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-}
-
-/*Fin gestion du logo*/
-nav {
-  width: 20%;
-  font-size: 12px;
-  text-align: right;
-  display: flex;
-  flex-direction: column;
-  color: black;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
+  height: 50px;
+  object-fit: contain;
 }
 
 nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-  font-family: "Oswald", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 200;
-  font-style: normal;
+  margin: 0 12px;
+  text-decoration: none;
+  color: black;
+  font-weight: 200; /* Extralight */
+  position: relative;
+  transition: color 0.3s ease;
 }
 
-nav a:first-of-type {
-  border: 0;
+nav a::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background-color: #333;
+  transition: width 0.3s ease-in-out;
 }
+
+nav a:hover::after {
+  width: 100%;
+}
+
+/* User actions */
+.user-actions {
+  display: flex;
+  align-items: center;
+}
+
+.user-actions .logged-in span {
+  margin-right: 10px;
+}
+
+/* ================= MAIN ================= */
+main {
+  padding-top: 100px; /* hauteur du header */
+  min-height: 80vh;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 200; /* Extralight */
+}
+
+/* ================= FOOTER ================= */
+footer {
+  background: #A88871;
+  color: black;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 200; /* Extralight */
+  padding: 2rem 1rem;
+}
+
+.footer-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-section {
+  flex: 1;
+  min-width: 250px;
+  margin: 1rem 0;
+  text-align: center;
+  font-weight: 200; /* Extralight */
+}
+
+/* Footer links */
+.footer-links a {
+  color: black;
+  text-decoration: none;
+  margin: 0 8px;
+  position: relative;
+  transition: color 0.3s ease;
+  font-weight: 200; /* Extralight */
+}
+
+.footer-links a::after {
+  content: "";
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background-color: #333;
+  border-radius: 2px;
+  transition: width 0.3s ease-in-out;
+}
+
+.footer-links a:hover::after {
+  width: 100%;
+}
+
+/* Footer bottom */
+.footer-bottom {
+  text-align: center;
+  font-size: 0.85rem;
+  margin-top: 1rem;
+  font-weight: 200; /* Extralight */
+}
+
+/* Social icons */
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 10px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: white;
+  color: black;
+  position: relative;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.icon .tooltip {
+  position: absolute;
+  bottom: 130%;
+  background: black;
+  color: white;
+  padding: 5px 8px;
+  border-radius: 6px;
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+  transition: all 0.3s ease;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  font-weight: 200; /* Extralight */
+}
+
+.icon:hover .tooltip {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.icon.facebook:hover {
+  background: #1877F2;
+  color: white;
+}
+
+.icon.instagram:hover {
+  background: #E4405F;
+  color: white;
+}
+
 </style>

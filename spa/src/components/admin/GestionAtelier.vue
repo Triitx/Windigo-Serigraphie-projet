@@ -36,10 +36,12 @@
       <input v-model.number="form.price" type="number" placeholder="Prix" class="border p-2 w-full" required />
       <input v-model.number="form.duration" type="number" placeholder="Durée (min)" class="border p-2 w-full" required />
       <input v-model.number="form.age" type="number" placeholder="Age minimum" class="border p-2 w-full" required />
-      <button class="px-4 py-2 bg-blue-600 text-white rounded">
-        {{ form.id ? "Mettre à jour" : "Créer" }}
-      </button>
-      <button type="button" @click="resetForm" class="px-4 py-2 bg-gray-300 rounded">Annuler</button>
+      <div class="space-x-2">
+        <button class="px-4 py-2 bg-blue-600 text-white rounded" :disabled="store.loading">
+          {{ form.id ? "Mettre à jour" : "Créer" }}
+        </button>
+        <button type="button" @click="resetForm" class="px-4 py-2 bg-gray-300 rounded">Annuler</button>
+      </div>
     </form>
 
     <div v-if="store.loading" class="mt-4 text-blue-600">Chargement...</div>
@@ -63,15 +65,27 @@ const form = reactive<Workshop>({
   age: 0,
 })
 
-onMounted(() => store.fetchAdminWorkshops())
+// Chargement initial des ateliers admin
+onMounted(() => store.fetchWorkshops(true))
 
 const saveWorkshop = async () => {
-  if (form.id) {
-    await store.updateAdminWorkshop(form.id, form)
-  } else {
-    await store.createAdminWorkshop(form)
+  store.loading = true
+  try {
+    if (form.id) {
+      // Mise à jour
+      await store.updateWorkshop(form.id, form)
+      // L’update dans le store met déjà à jour workshops, pas besoin de modifier ici
+    } else {
+      // Création
+      await store.createWorkshop(form)
+      // Le store ajoute déjà l’atelier créé dans workshops
+    }
+    resetForm()
+  } catch (err: any) {
+    store.error = err.message
+  } finally {
+    store.loading = false
   }
-  resetForm()
 }
 
 const editWorkshop = (workshop: Workshop) => {
@@ -89,7 +103,15 @@ const resetForm = () => {
 
 const deleteWorkshop = async (id: number) => {
   if (confirm("Voulez-vous vraiment supprimer cet atelier ?")) {
-    await store.deleteAdminWorkshop(id)
+    store.loading = true
+    try {
+      await store.deleteWorkshop(id)
+      store.workshops = store.workshops.filter(w => w.id !== id)
+    } catch (err: any) {
+      store.error = err.message
+    } finally {
+      store.loading = false
+    }
   }
 }
 </script>

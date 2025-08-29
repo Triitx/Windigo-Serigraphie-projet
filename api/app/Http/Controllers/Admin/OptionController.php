@@ -10,49 +10,44 @@ class OptionController extends Controller
 {
     public function index()
     {
-        return Option::all();
+        return response()->json(Option::all());
     }
+
     public function store(Request $request)
     {
         $formFields = $request->validate([
             'name' => 'required|string',
         ]);
 
+        $option = Option::create($formFields);
 
-        $option = new Option();
-        $option->fill($formFields);
-        $option->save();
         return response()->json($option);
     }
 
-    /**
-     * Display the specified resource.
-     */
-   public function show($id)
+    public function show($id)
     {
-        return Option::findOrFail($id);
+        $option = Option::findOrFail($id);
+        return response()->json($option);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Option $option)
+    public function update(Request $request, $id)
     {
         $formFields = $request->validate([
             'name' => 'string',
         ]);
 
+        $option = Option::findOrFail($id);
         $option->fill($formFields);
         $option->save();
+
         return response()->json($option);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Option $option)
+    public function destroy($id)
     {
+        $option = Option::findOrFail($id);
         $option->delete();
-        return response()->json(['success' => 'success']);
+
+        return response()->json(['success' => true]);
     }
 }
