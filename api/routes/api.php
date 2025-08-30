@@ -72,21 +72,15 @@ Route::prefix('workshops')->group(function () {
     Route::get('', [WorkshopController::class, 'index']); // liste des ateliers
     Route::get('/{workshop}', [WorkshopController::class, 'show']); // détail d’un atelier
   });  
-Route::controller(WorkshopSessionController::class)->prefix('workshops')->group(function () {
-    Route::post('/{workshop}/sessions', 'store');
-    Route::put('/{workshop}/sessions/{id}', 'update');
-    Route::delete('/{workshop}/sessions/{id}', 'destroy');
-});
-
 
 
 //Gestion des réservations
 Route::get('/workshops/{workshop_id}/sessions/available', [BookingController::class, 'availableSessions']); // Sessions disponibles pour un atelier donné
 
 Route::controller(BookingController::class)->prefix('bookings')->group(function () {
-    Route::get('/bookings', 'index');
-    Route::post('/bookings/{session_id}', 'store');
-    Route::delete('/bookings/{id}', 'destroy');
+    Route::get('/', 'index');
+    Route::post('/{session_id}', 'store');
+    Route::delete('/{id}', 'destroy');
 });
 
 
@@ -138,6 +132,12 @@ Route::/*middleware(['auth:sanctum', 'admin'])->*/prefix('admin')->group(functio
         Route::put('/{workshop}', 'update');
         Route::delete('/{workshop}', 'destroy');
     });
+    //Gestion des sessions
+    Route::controller(WorkshopSessionController::class)->prefix('workshops')->group(function () {
+    Route::post('/{workshop}/sessions', 'store');
+    Route::put('/{workshop}/sessions/{id}', 'update');
+    Route::delete('/{workshop}/sessions/{id}', 'destroy');
+});
     // Catégories & options
     Route::controller(CategoryController::class)->prefix('categories')->group(function () {
         Route::get('', 'index');

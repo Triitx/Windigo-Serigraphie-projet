@@ -42,16 +42,19 @@ const formatDate = (dateStr: string) => {
             <div v-if="workshop.workshopSessions?.length" class="mt-auto">
               <h6>Sessions :</h6>
               <ul class="list-group list-group-flush">
-                <li v-for="session in workshop.workshopSessions" :key="session.id" class="list-group-item d-flex justify-content-between align-items-center">
+                <li v-for="session in workshop.workshopSessions" :key="session.id"
+                  class="list-group-item d-flex justify-content-between align-items-center">
                   {{ formatDate(session.date) }} - N°{{ session.session_number }}
                   <span class="badge bg-primary rounded-pill">{{ session.capacity }} places</span>
                 </li>
               </ul>
             </div>
 
-            <button class="btn btn-primary mt-3 w-100" :disabled="!workshop.workshopSessions?.length">
-              Réserver
-            </button>
+            <RouterLink class="btn btn-primary mt-3 w-100"
+              :to="{ name: 'atelier-detail', params: { id: workshop.id } }">
+              Voir détails & Réserver
+            </RouterLink>
+
           </div>
         </div>
       </div>
@@ -64,8 +67,9 @@ const formatDate = (dateStr: string) => {
   border-radius: 12px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
+
 .card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
 }
 </style>

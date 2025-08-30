@@ -1,26 +1,27 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\WorkshopSession;
+use App\Models\Workshop;
 
 class WorkshopSessionController extends Controller
 {
-    public function store(Request $request, $workshop_id)
+    public function store(Request $request, $workshop)
     {
+        $workshop = Workshop::findOrFail($workshop);
+
         $validated = $request->validate([
-            'session_number' => 'required|integer',
             'capacity' => 'required|integer|min:1',
             'date' => 'required|date',
         ]);
 
-        $session = WorkshopSession::create([
-            'session_number' => $validated['session_number'],
-            'capacity' => $validated['capacity'],
-            'workshop_id' => $workshop_id,
-            'date' => $request->date,
-        ]);
+        // Numéro de session automatique : max + 1
+        $lastNumber = $workshop->workshopSessions()->max('session_number') ?? 0;
+        $validated['session_number'] = $lastNumber + 1;
+        $validated['workshop_id'] = $workshop->id;
+
+        $session = WorkshopSession::create($validated);
 
         return response()->json([
             'success' => true,
@@ -29,10 +30,7 @@ class WorkshopSessionController extends Controller
         ], 201);
     }
 
-    /**
-     * Mettre à jour une session
-     */
-    public function update(Request $request, $id)
+    public function update(Request $request, $workshop, $id)
     {
         $validated = $request->validate([
             'session_number' => 'integer',
@@ -50,10 +48,7 @@ class WorkshopSessionController extends Controller
         ]);
     }
 
-    /**
-     * Supprimer une session
-     */
-    public function destroy($id)
+    public function destroy($workshop, $id)
     {
         $session = WorkshopSession::findOrFail($id);
         $session->delete();

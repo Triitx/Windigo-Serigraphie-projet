@@ -9,8 +9,10 @@ class WorkshopController extends Controller
 {
     public function index()
     {
-        return response()->json(Workshop::all());
+        $workshops = Workshop::with('workshopSessions')->get();
+        return response()->json($workshops);
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -37,7 +39,7 @@ class WorkshopController extends Controller
      */
     public function show(Workshop $workshop)
     {
-  
+
         return response()->json($workshop);
     }
 

@@ -8,6 +8,7 @@ export const useWorkshopStore = defineStore("workshops", {
     workshops: [] as Workshop[],
     sessions: [] as WorkshopSession[],
     reservations: [] as Reservation[],
+    currentWorkshop: null as Workshop | null, // 👈 pour stocker un atelier sélectionné
     loading: false,
     error: null as string | null
   }),
@@ -21,6 +22,20 @@ export const useWorkshopStore = defineStore("workshops", {
         this.workshops = res.data
       } catch (err: any) {
         this.error = err.message
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async fetchWorkshopById(id: number) {
+      this.loading = true
+      this.error = null
+      try {
+        const res = await WorkshopService.getById(id) // 👈 il faut que ton service ait un getById
+        this.currentWorkshop = res.data
+      } catch (err: any) {
+        this.error = err.message
+        this.currentWorkshop = null
       } finally {
         this.loading = false
       }
@@ -46,6 +61,9 @@ export const useWorkshopStore = defineStore("workshops", {
         const res = await WorkshopService.update(id, workshop)
         const idx = this.workshops.findIndex(w => w.id === id)
         if (idx !== -1) this.workshops[idx] = res.data
+        if (this.currentWorkshop?.id === id) {
+          this.currentWorkshop = res.data // 👈 si on est sur la vue détail
+        }
       } catch (err: any) {
         this.error = err.message
       } finally {
@@ -59,11 +77,44 @@ export const useWorkshopStore = defineStore("workshops", {
       try {
         await WorkshopService.delete(id)
         this.workshops = this.workshops.filter(w => w.id !== id)
+        if (this.currentWorkshop?.id === id) {
+          this.currentWorkshop = null // 👈 reset si on l’affichait
+        }
       } catch (err: any) {
         this.error = err.message
       } finally {
         this.loading = false
       }
-    }
+    },
+
+    // 👇 tu pourras brancher ça sur le bouton "Réserver"
+async bookSession(sessionId: number) {
+  this.loading = true
+  this.error = null
+  try {
+    const res = await WorkshopService.bookSession(sessionId)
+    this.reservations.push(res.data)
+    return res.data
+  } catch (err: any) {
+    this.error = err.message
+    return null
+  } finally {
+    this.loading = false
+  }
+},
+
+async cancelBooking(reservationId: number) {
+  this.loading = true
+  this.error = null
+  try {
+    await WorkshopService.cancelBooking(reservationId)
+    this.reservations = this.reservations.filter(r => r.id !== reservationId)
+  } catch (err: any) {
+    this.error = err.message
+  } finally {
+    this.loading = false
+  }
+}
+
   }
 })

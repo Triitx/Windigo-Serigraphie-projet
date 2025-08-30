@@ -2,9 +2,6 @@
 
 namespace App\Models;
 
-use Backpack\CRUD\app\Models\Traits\CrudTrait;
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-
 use App\Enums\RoleEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -13,13 +10,12 @@ use Illuminate\Support\Facades\Auth;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
     /**
-     * The attributes that are mass assignable.
+     * Les attributs assignables en masse
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $fillable = [
         'name',
@@ -28,13 +24,12 @@ class User extends Authenticatable
         'password',
         'billing_address',
         'delivery_address',
-
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
+     * Les attributs cachés pour la sérialisation
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $hidden = [
         'password',
@@ -42,31 +37,35 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * Les casts automatiques
      *
-     * @return array<string, string>
+     * @var array<string, string>
      */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'role' => RoleEnum::class,
-        ];
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+        'role' => RoleEnum::class, // <-- cast enum
+    ];
 
-    public function resolveRouteBinding($value, $field = null): ?self
-    {
-        return $value === 'me' ? Auth::user() : parent::resolveRouteBinding(
-            $value,
-            $field
-        );
-    }
-
-    public function IsAdmin()
+    /**
+     * Vérifie si l'utilisateur est admin
+     */
+    public function isAdmin(): bool
     {
         return $this->role === RoleEnum::ROLE_ADMIN;
     }
+
+    /**
+     * Résout le "me" pour les routes
+     */
+    public function resolveRouteBinding($value, $field = null): ?self
+    {
+        return $value === 'me' ? Auth::user() : parent::resolveRouteBinding($value, $field);
+    }
+
+    // ---------------------
+    // RELATIONS
+    // ---------------------
 
     public function cartProducts()
     {

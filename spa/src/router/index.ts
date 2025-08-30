@@ -10,6 +10,7 @@ import ProductList from '@/components/ProductList.vue';
 import { useUserStore } from '@/stores/User';
 import Panier from '@/components/Panier.vue';
 import { fetchUser } from '@/_services/AuthService';
+import AtelierDetailView from '@/components/AtelierDetailView.vue';
 
 
 const router = createRouter({
@@ -42,6 +43,13 @@ const router = createRouter({
       path: '/ateliers',
       name: 'ateliers',
       component: Atelier
+    },
+
+    {
+      path: '/ateliers/:id',
+      name: 'atelier-detail',
+      component: AtelierDetailView,
+      props: true
     },
 
     {
