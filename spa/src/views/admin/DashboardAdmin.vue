@@ -1,25 +1,29 @@
 <template>
-  <div class="flex h-screen">
+  <div class="d-flex vh-100">
     <!-- Sidebar -->
-    <aside class="w-64 bg-gray-800 text-white flex flex-col">
-      <h1 class="text-2xl font-bold p-4 border-b border-gray-700">Back Office</h1>
-      <nav class="flex-1 p-4 space-y-2">
+    <aside class="bg-dark text-white d-flex flex-column" style="width: 220px;">
+      <div class="p-3 border-bottom border-secondary d-flex align-items-center">
+        <i class="bi bi-gear-fill me-2"></i>
+        <h1 class="h5 mb-0">Back Office</h1>
+      </div>
+      <nav class="flex-grow-1 p-2">
         <button
           v-for="link in links"
           :key="link.name"
           @click="currentTab = link.component"
           :class="[
-            'block w-full text-left px-3 py-2 rounded',
-            currentTab === link.component ? 'bg-gray-700' : 'hover:bg-gray-700'
+            'btn w-100 text-start d-flex align-items-center mb-2',
+            currentTab === link.component ? 'btn-secondary' : 'btn-dark',
           ]"
         >
+          <i :class="link.icon + ' me-2'"></i>
           {{ link.name }}
         </button>
       </nav>
     </aside>
 
     <!-- Main content -->
-    <main class="flex-1 p-6 overflow-auto bg-gray-100">
+    <main class="flex-fill p-4 bg-light overflow-auto">
       <component :is="currentTab" />
     </main>
   </div>
@@ -28,17 +32,18 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-// Import des managers
+// Import des composants admin
 import GestionProduit from '@/components/admin/GestionProduit.vue'
 import GestionAtelier from '@/components/admin/GestionAtelier.vue'
 import GestionCategorie from '@/components/admin/GestionCategorie.vue'
 import GestionOption from '@/components/admin/GestionOption.vue'
 
+// Liens avec icônes Bootstrap Icons
 const links = [
-  { name: 'Produits', component: GestionProduit },
-  { name: 'Ateliers', component: GestionAtelier },
-  { name: 'Catégories', component: GestionCategorie },
-  { name: 'Options', component: GestionOption },
+  { name: 'Produits', component: GestionProduit, icon: 'bi bi-box-seam' },
+  { name: 'Ateliers', component: GestionAtelier, icon: 'bi bi-brush' },
+  { name: 'Catégories', component: GestionCategorie, icon: 'bi bi-tags' },
+  { name: 'Options', component: GestionOption, icon: 'bi bi-sliders' },
 ]
 
 const currentTab = ref(links[0].component)
@@ -46,6 +51,9 @@ const currentTab = ref(links[0].component)
 
 <style scoped>
 button {
-  transition: background 0.2s;
+  transition: background 0.2s, color 0.2s;
+}
+button:hover {
+  background-color: #495057 !important;
 }
 </style>

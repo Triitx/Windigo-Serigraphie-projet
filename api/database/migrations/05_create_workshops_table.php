@@ -7,9 +7,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('workshops', function (Blueprint $table) {
@@ -19,15 +16,15 @@ return new class extends Migration
             $table->integer('price');
             $table->time('duration');
             $table->integer('age');
+            $table->text('description')->nullable(); 
+            $table->json('images')->nullable();    
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('workshops');
     }
 };
+

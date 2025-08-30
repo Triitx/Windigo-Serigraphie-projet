@@ -9,14 +9,18 @@ class WorkshopController extends Controller
 {
     public function index()
     {
+        // On charge les ateliers avec les sessions
         $workshops = Workshop::with('workshopSessions')->get();
+
+        // Optionnel : transformer pour inclure la première image directement
+        $workshops->transform(function ($workshop) {
+            $workshop->first_image_url = $workshop->first_image_url; // utilise l'accessor
+            return $workshop;
+        });
+
         return response()->json($workshops);
     }
 
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $formFields = $request->validate([
@@ -24,28 +28,31 @@ class WorkshopController extends Controller
             'type' => 'required|string',
             'price' => 'required|integer',
             'duration' => 'required|integer',
-            'age' => 'required|integer'
+            'age' => 'required|integer',
+            'description' => 'nullable|string',
+            'images.*' => 'nullable|image|max:2048',
         ]);
 
+        $images = [];
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $images[] = $image->store('workshops', 'public'); // stocke juste le nom/chemin relatif
+            }
+        }
 
-        $workshop = new Workshop();
-        $workshop->fill($formFields);
-        $workshop->save();
+        $formFields['images'] = $images;
+
+        $workshop = Workshop::create($formFields);
+
         return response()->json($workshop);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Workshop $workshop)
     {
-
+        $workshop->first_image_url = $workshop->first_image_url; // accessor
         return response()->json($workshop);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Workshop $workshop)
     {
         $formFields = $request->validate([
@@ -53,17 +60,27 @@ class WorkshopController extends Controller
             'type' => 'string',
             'price' => 'integer',
             'duration' => 'integer',
-            'age' => 'integer'
+            'age' => 'integer',
+            'description' => 'nullable|string',
+            'images.*' => 'nullable|image|max:2048',
         ]);
 
-        $workshop->fill($formFields);
-        $workshop->save();
+        // Conserver les anciennes images
+        $existingImages = $workshop->images ?? [];
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $existingImages[] = $image->store('workshops', 'public');
+            }
+        }
+        $formFields['images'] = $existingImages;
+
+        $workshop->update($formFields);
+
+        $workshop->first_image_url = $workshop->first_image_url; // accessor
+
         return response()->json($workshop);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Workshop $workshop)
     {
         $workshop->delete();

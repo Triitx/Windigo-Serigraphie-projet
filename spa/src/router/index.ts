@@ -5,8 +5,6 @@ import Register from '@/views/Register.vue';
 import Atelier from '@/components/Atelier.vue';
 import Boutique from '@/components/Boutique.vue';
 import DashboardAdmin from '@/views/admin/DashboardAdmin.vue';
-import ProductForm from '@/components/ProductForm.vue';
-import ProductList from '@/components/ProductList.vue';
 import { useUserStore } from '@/stores/User';
 import Panier from '@/components/Panier.vue';
 import { fetchUser } from '@/_services/AuthService';

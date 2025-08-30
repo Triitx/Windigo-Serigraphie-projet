@@ -5,6 +5,9 @@ export interface Workshop {
   price: number;
   duration: number;
   age: number;
+  description?: string;          
+  images?: string[];             
+  first_image_url?: string;      
   workshopSessions?: WorkshopSession[];
 }
 

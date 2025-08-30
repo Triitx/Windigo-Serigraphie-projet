@@ -2,6 +2,7 @@
   <div class="p-4">
     <h2 class="text-xl font-semibold mb-4">Gestion des Ateliers</h2>
 
+    <!-- Table des ateliers -->
     <table class="w-full border border-gray-300 mb-6">
       <thead class="bg-gray-100">
         <tr>
@@ -11,6 +12,8 @@
           <th class="border px-2 py-1">Prix</th>
           <th class="border px-2 py-1">Durée</th>
           <th class="border px-2 py-1">Age</th>
+          <th class="border px-2 py-1">Image</th>
+          <th class="border px-2 py-1">Description</th>
           <th class="border px-2 py-1">Actions</th>
         </tr>
       </thead>
@@ -22,6 +25,26 @@
           <td class="border px-2 py-1">{{ workshop.price }} €</td>
           <td class="border px-2 py-1">{{ workshop.duration }} min</td>
           <td class="border px-2 py-1">{{ workshop.age }} ans</td>
+
+          <!-- Image principale via accessor -->
+          <td class="border px-2 py-1">
+            <img
+              v-if="workshop.first_image_url"
+              :src="workshop.first_image_url"
+              class="table-image"
+            />
+            <span v-else>Aucune</span>
+          </td>
+
+          <!-- Description tronquée à 100 caractères -->
+          <td class="border px-2 py-1">
+            {{ workshop.description
+              ? (workshop.description.length > 100
+                ? workshop.description.substring(0, 100) + '...'
+                : workshop.description)
+              : 'Aucune description' }}
+          </td>
+
           <td class="border px-2 py-1 space-x-2">
             <button @click="editWorkshop(workshop)" class="px-2 py-1 bg-yellow-400 rounded">✏️</button>
             <button @click="deleteWorkshop(workshop.id)" class="px-2 py-1 bg-red-500 text-white rounded">🗑️</button>
@@ -30,13 +53,33 @@
       </tbody>
     </table>
 
+    <!-- Formulaire de création / édition -->
     <form @submit.prevent="saveWorkshop" class="space-y-3">
       <input v-model="form.name" placeholder="Nom" class="border p-2 w-full" required />
       <input v-model="form.type" placeholder="Type" class="border p-2 w-full" required />
       <input v-model.number="form.price" type="number" placeholder="Prix" class="border p-2 w-full" required />
       <input v-model.number="form.duration" type="number" placeholder="Durée (min)" class="border p-2 w-full" required />
       <input v-model.number="form.age" type="number" placeholder="Age minimum" class="border p-2 w-full" required />
-      <div class="space-x-2">
+
+      <!-- Description -->
+      <textarea v-model="form.description" placeholder="Description" class="border p-2 w-full" rows="4"></textarea>
+
+      <!-- Upload images multiples -->
+      <div>
+        <label class="block mb-1 font-medium">Images (plusieurs possibles)</label>
+        <input type="file" multiple @change="handleFilesChange" class="border p-1 w-full" />
+      </div>
+
+      <!-- Aperçu images réduites -->
+      <div class="flex flex-wrap gap-2 mt-2">
+        <div v-for="(img, index) in previewImages" :key="index" class="relative">
+          <img :src="img" class="table-image border" />
+          <button type="button" @click="removePreviewImage(index)"
+            class="absolute top-0 right-0 bg-red-600 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">x</button>
+        </div>
+      </div>
+
+      <div class="space-x-2 mt-2">
         <button class="px-4 py-2 bg-blue-600 text-white rounded" :disabled="store.loading">
           {{ form.id ? "Mettre à jour" : "Créer" }}
         </button>
@@ -50,7 +93,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, onMounted } from 'vue'
+import { reactive, ref, onMounted } from 'vue'
 import { useWorkshopStore } from '@/stores/Workshop'
 import type { Workshop } from '@/_models/Workshop'
 
@@ -63,23 +106,45 @@ const form = reactive<Workshop>({
   price: 0,
   duration: 0,
   age: 0,
+  description: '',
+  images: [],
 })
 
-// Chargement initial des ateliers admin
+const previewImages = ref<string[]>([])
+const files = ref<File[]>([])
+
 onMounted(() => store.fetchWorkshops(true))
+
+const handleFilesChange = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  if (!target.files) return
+  files.value = Array.from(target.files)
+  previewImages.value = files.value.map(f => URL.createObjectURL(f))
+}
+
+const removePreviewImage = (index: number) => {
+  files.value.splice(index, 1)
+  previewImages.value.splice(index, 1)
+}
 
 const saveWorkshop = async () => {
   store.loading = true
   try {
+    const formData = new FormData()
+    formData.append('name', form.name)
+    formData.append('type', form.type)
+    formData.append('price', String(form.price))
+    formData.append('duration', String(form.duration))
+    formData.append('age', String(form.age))
+    formData.append('description', form.description || '')
+    files.value.forEach(f => formData.append('images[]', f))
+
     if (form.id) {
-      // Mise à jour
-      await store.updateWorkshop(form.id, form)
-      // L’update dans le store met déjà à jour workshops, pas besoin de modifier ici
+      await store.updateWorkshop(form.id, formData)
     } else {
-      // Création
-      await store.createWorkshop(form)
-      // Le store ajoute déjà l’atelier créé dans workshops
+      await store.createWorkshop(formData)
     }
+
     resetForm()
   } catch (err: any) {
     store.error = err.message
@@ -90,6 +155,8 @@ const saveWorkshop = async () => {
 
 const editWorkshop = (workshop: Workshop) => {
   Object.assign(form, workshop)
+  previewImages.value = workshop.images?.map(i => `/storage/${i}`) || []
+  files.value = []
 }
 
 const resetForm = () => {
@@ -99,6 +166,10 @@ const resetForm = () => {
   form.price = 0
   form.duration = 0
   form.age = 0
+  form.description = ''
+  form.images = []
+  previewImages.value = []
+  files.value = []
 }
 
 const deleteWorkshop = async (id: number) => {
@@ -115,3 +186,12 @@ const deleteWorkshop = async (id: number) => {
   }
 }
 </script>
+
+<style scoped>
+.table-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+</style>

@@ -10,7 +10,12 @@ onMounted(() => {
 
 const formatDate = (dateStr: string) => {
   const d = new Date(dateStr);
-  return d.toLocaleDateString('fr-FR', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
+  return d.toLocaleDateString('fr-FR', {
+    weekday: 'short',
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+  });
 };
 </script>
 
@@ -18,19 +23,35 @@ const formatDate = (dateStr: string) => {
   <div class="container my-5">
     <h2 class="mb-4 text-center">Nos Ateliers</h2>
 
+    <!-- Chargement -->
     <div v-if="workshopStore.loading" class="text-center my-5">
       <div class="spinner-border" role="status">
         <span class="visually-hidden">Chargement...</span>
       </div>
     </div>
 
+    <!-- Erreur -->
     <div v-else-if="workshopStore.error" class="alert alert-danger text-center">
       {{ workshopStore.error }}
     </div>
 
+    <!-- Liste des ateliers -->
     <div v-else class="row g-4">
-      <div v-for="workshop in workshopStore.workshops" :key="workshop.id" class="col-12 col-md-6 col-lg-4">
+      <div
+        v-for="workshop in workshopStore.workshops"
+        :key="workshop.id"
+        class="col-12 col-md-6 col-lg-4"
+      >
         <div class="card h-100 shadow-sm">
+          <!-- Image principale via accessor -->
+          <div v-if="workshop.first_image_url" class="mb-3">
+            <img
+              :src="workshop.first_image_url"
+              :alt="workshop.name"
+              class="card-image"
+            />
+          </div>
+
           <div class="card-body d-flex flex-column">
             <h5 class="card-title">{{ workshop.name }}</h5>
             <h6 class="card-subtitle mb-2 text-muted">{{ workshop.type }}</h6>
@@ -42,19 +63,23 @@ const formatDate = (dateStr: string) => {
             <div v-if="workshop.workshopSessions?.length" class="mt-auto">
               <h6>Sessions :</h6>
               <ul class="list-group list-group-flush">
-                <li v-for="session in workshop.workshopSessions" :key="session.id"
-                  class="list-group-item d-flex justify-content-between align-items-center">
+                <li
+                  v-for="session in workshop.workshopSessions"
+                  :key="session.id"
+                  class="list-group-item d-flex justify-content-between align-items-center"
+                >
                   {{ formatDate(session.date) }} - N°{{ session.session_number }}
                   <span class="badge bg-primary rounded-pill">{{ session.capacity }} places</span>
                 </li>
               </ul>
             </div>
 
-            <RouterLink class="btn btn-primary mt-3 w-100"
-              :to="{ name: 'atelier-detail', params: { id: workshop.id } }">
+            <RouterLink
+              class="btn btn-primary mt-3 w-100"
+              :to="{ name: 'atelier-detail', params: { id: workshop.id } }"
+            >
               Voir détails & Réserver
             </RouterLink>
-
           </div>
         </div>
       </div>
@@ -71,5 +96,12 @@ const formatDate = (dateStr: string) => {
 .card:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.card-image {
+  width: 100%;
+  max-height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
 }
 </style>

@@ -37,12 +37,38 @@ const handleBooking = async (sessionId: number) => {
 
 <template>
   <div class="container my-5" v-if="workshop">
-    <h2 class="mb-3">{{ workshop.name }}</h2>
-    <h5 class="text-muted">{{ workshop.type }}</h5>
-    <p><strong>Prix :</strong> {{ workshop.price }} €</p>
-    <p><strong>Durée :</strong> {{ workshop.duration }} min</p>
-    <p><strong>Âge minimum :</strong> {{ workshop.age }} ans</p>
-    <p class="mt-3">{{ workshop.description }}</p>
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <!-- Carousel ou galerie images -->
+        <div v-if="workshop.images?.length" id="workshopCarousel" class="carousel slide">
+          <div class="carousel-inner">
+            <div
+              v-for="(img, index) in workshop.images"
+              :key="index"
+              :class="['carousel-item', { active: index === 0 }]"
+            >
+              <img :src="img.startsWith('http') ? img : `/storage/${img}`" class="d-block w-100 rounded" />
+            </div>
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#workshopCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#workshopCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+          </button>
+        </div>
+        <div v-else class="border rounded p-3 text-center text-muted">Aucune image disponible</div>
+      </div>
+
+      <div class="col-md-6">
+        <h2>{{ workshop.name }}</h2>
+        <h5 class="text-muted">{{ workshop.type }}</h5>
+        <p><strong>Prix :</strong> {{ workshop.price }} €</p>
+        <p><strong>Durée :</strong> {{ workshop.duration }} min</p>
+        <p><strong>Âge minimum :</strong> {{ workshop.age }} ans</p>
+        <p class="mt-3">{{ workshop.description }}</p>
+      </div>
+    </div>
 
     <h4 class="mt-5">Sessions disponibles</h4>
     <ul v-if="workshop.workshopSessions?.length" class="list-group">
@@ -70,6 +96,11 @@ const handleBooking = async (sessionId: number) => {
 </template>
 
 <style scoped>
+.carousel-item img {
+  height: 300px;
+  object-fit: cover;
+}
+
 .card {
   border-radius: 12px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
