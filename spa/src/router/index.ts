@@ -9,6 +9,7 @@ import { useUserStore } from '@/stores/User';
 import Panier from '@/components/Panier.vue';
 import { fetchUser } from '@/_services/AuthService';
 import AtelierDetailView from '@/components/AtelierDetailView.vue';
+import ProduitDetailView from '@/components/ProduitDetailView.vue';
 
 
 const router = createRouter({
@@ -23,6 +24,13 @@ const router = createRouter({
       path: '/boutique',
       name: 'boutique',
       component: Boutique
+    },
+
+        {
+      path: '/produits/:id',
+      name: 'produit-detail',
+      component: ProduitDetailView,
+      props: true
     },
 
     {

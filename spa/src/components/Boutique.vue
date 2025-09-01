@@ -24,8 +24,13 @@ onMounted(async () => {
 
 async function handleAddToCart(productId: number) {
   try {
-    const quantity = quantities.value[productId] || 1;
-    await setCart(productId, quantity);
+    const currentItem = cartStore.items.find(i => i.product_id === productId);
+    const currentQuantity = currentItem?.quantity ?? 0;
+    const quantityToAdd = quantities.value[productId] || 1;
+    const newQuantity = currentQuantity + quantityToAdd;
+
+    await setCart(productId, newQuantity);
+
     toastMessage.value = 'Produit ajouté au panier 🛒';
     toastType.value = 'success';
   } catch (error) {
@@ -34,6 +39,7 @@ async function handleAddToCart(productId: number) {
     toastType.value = 'danger';
   }
 }
+
 </script>
 
 <template>
@@ -45,6 +51,7 @@ async function handleAddToCart(productId: number) {
         :key="product.id"
         class="col-md-4 mb-4"
       >
+      <RouterLink :to="{ name: 'produit-detail', params: { id: product.id } }">
         <div class="card h-100 p-3 shadow-sm border-0 rounded-3">
           <div v-if="product.picture" class="mb-3">
             <img
@@ -72,7 +79,9 @@ async function handleAddToCart(productId: number) {
             </button>
           </div>
         </div>
+        </RouterLink>
       </div>
+      
     </div>
   </div>
   <AppToast v-model="toastMessage" :type="toastType" />

@@ -37,51 +37,40 @@ const formatDate = (dateStr: string) => {
 
     <!-- Liste des ateliers -->
     <div v-else class="row g-4">
-      <div
-        v-for="workshop in workshopStore.workshops"
-        :key="workshop.id"
-        class="col-12 col-md-6 col-lg-4"
-      >
-        <div class="card h-100 shadow-sm">
-          <!-- Image principale via accessor -->
-          <div v-if="workshop.first_image_url" class="mb-3">
-            <img
-              :src="workshop.first_image_url"
-              :alt="workshop.name"
-              class="card-image"
-            />
-          </div>
-
-          <div class="card-body d-flex flex-column">
-            <h5 class="card-title">{{ workshop.name }}</h5>
-            <h6 class="card-subtitle mb-2 text-muted">{{ workshop.type }}</h6>
-            <p class="card-text mb-1"><strong>Prix :</strong> {{ workshop.price }} €</p>
-            <p class="card-text mb-2"><strong>Durée :</strong> {{ workshop.duration }} min</p>
-            <p class="card-text mb-2"><strong>Âge minimum :</strong> {{ workshop.age }} ans</p>
-
-            <!-- Sessions -->
-            <div v-if="workshop.workshopSessions?.length" class="mt-auto">
-              <h6>Sessions :</h6>
-              <ul class="list-group list-group-flush">
-                <li
-                  v-for="session in workshop.workshopSessions"
-                  :key="session.id"
-                  class="list-group-item d-flex justify-content-between align-items-center"
-                >
-                  {{ formatDate(session.date) }} - N°{{ session.session_number }}
-                  <span class="badge bg-primary rounded-pill">{{ session.capacity }} places</span>
-                </li>
-              </ul>
+      <div v-for="workshop in workshopStore.workshops" :key="workshop.id" class="col-12 col-md-6 col-lg-4">
+        <RouterLink :to="{ name: 'atelier-detail', params: { id: workshop.id } }">
+          <div class="card h-100 shadow-sm">
+            <!-- Image principale via accessor -->
+            <div v-if="workshop.first_image_url" class="mb-3">
+              <img :src="workshop.first_image_url" :alt="workshop.name" class="card-image" />
             </div>
 
-            <RouterLink
-              class="btn btn-primary mt-3 w-100"
-              :to="{ name: 'atelier-detail', params: { id: workshop.id } }"
-            >
-              Voir détails & Réserver
-            </RouterLink>
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">{{ workshop.name }}</h5>
+              <h6 class="card-subtitle mb-2 text-muted">{{ workshop.type }}</h6>
+              <p class="card-text mb-1"><strong>Prix :</strong> {{ workshop.price }} €</p>
+              <p class="card-text mb-2"><strong>Durée :</strong> {{ workshop.duration }} min</p>
+              <p class="card-text mb-2"><strong>Âge minimum :</strong> {{ workshop.age }} ans</p>
+
+              <!-- Sessions -->
+              <div v-if="workshop.workshopSessions?.length" class="mt-auto">
+                <h6>Sessions :</h6>
+                <ul class="list-group list-group-flush">
+                  <li v-for="session in workshop.workshopSessions" :key="session.id"
+                    class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ formatDate(session.date) }} - N°{{ session.session_number }}
+                    <span class="badge bg-primary rounded-pill">{{ session.capacity }} places</span>
+                  </li>
+                </ul>
+              </div>
+
+              <RouterLink class="btn btn-primary mt-3 w-100"
+                :to="{ name: 'atelier-detail', params: { id: workshop.id } }">
+                Voir détails & Réserver
+              </RouterLink>
+            </div>
           </div>
-        </div>
+        </RouterLink>
       </div>
     </div>
   </div>

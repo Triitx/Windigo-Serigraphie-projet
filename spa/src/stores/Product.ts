@@ -79,6 +79,7 @@ export const useProductStore = defineStore('product', {
       this.loading = true;
       this.error = null;
       try {
+        // ⚡ on envoie directement le FormData au backend
         const product = await productService.createAdminProduct(data);
         this.products.push(product);
         return product;
@@ -90,10 +91,14 @@ export const useProductStore = defineStore('product', {
       }
     },
 
-    async updateAdminProduct(id: number, data: Product | FormData) {
+    async updateAdminProduct(id: number, data: Product | FormData, removedImages: string[] = []) {
       this.loading = true;
       this.error = null;
       try {
+        // ⚡ Si data est un FormData, on ajoute removed_images[]
+        if (data instanceof FormData && removedImages.length) {
+          removedImages.forEach(img => data.append('removed_images[]', img));
+        }
         const updated = await productService.updateAdminProduct(id, data);
         const index = this.products.findIndex(p => p.id === id);
         if (index !== -1) this.products[index] = updated;
@@ -120,5 +125,4 @@ export const useProductStore = defineStore('product', {
       }
     }
   }
-  
 });

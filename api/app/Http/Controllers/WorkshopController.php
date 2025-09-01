@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Workshop;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class WorkshopController extends Controller
 {
@@ -53,33 +54,47 @@ class WorkshopController extends Controller
         return response()->json($workshop);
     }
 
-    public function update(Request $request, Workshop $workshop)
-    {
-        $formFields = $request->validate([
-            'name' => 'string',
-            'type' => 'string',
-            'price' => 'integer',
-            'duration' => 'integer',
-            'age' => 'integer',
-            'description' => 'nullable|string',
-            'images.*' => 'nullable|image|max:2048',
-        ]);
+   public function update(Request $request, Workshop $workshop)
+{
+    $formFields = $request->validate([
+        'name' => 'string',
+        'type' => 'string',
+        'price' => 'integer',
+        'duration' => 'integer',
+        'age' => 'integer',
+        'description' => 'nullable|string',
+        'images.*' => 'nullable|image|max:2048',
+    ]);
 
-        // Conserver les anciennes images
-        $existingImages = $workshop->images ?? [];
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $image) {
-                $existingImages[] = $image->store('workshops', 'public');
-            }
+    // Conserver les anciennes images
+    $existingImages = $workshop->images ?? [];
+
+    // Ajouter les nouvelles images uploadées
+    if ($request->hasFile('images')) {
+        foreach ($request->file('images') as $image) {
+            $existingImages[] = $image->store('workshops', 'public');
         }
-        $formFields['images'] = $existingImages;
-
-        $workshop->update($formFields);
-
-        $workshop->first_image_url = $workshop->first_image_url; // accessor
-
-        return response()->json($workshop);
     }
+
+    // Supprimer les images demandées
+    if ($request->has('removed_images')) {
+        foreach ($request->removed_images as $img) {
+            // Supprime le fichier du storage
+            Storage::disk('public')->delete($img);
+            // Retirer du tableau
+            $existingImages = array_filter($existingImages, fn($i) => $i !== $img);
+        }
+    }
+
+    $formFields['images'] = array_values($existingImages); // remettre à jour le tableau
+
+    $workshop->update($formFields);
+
+    $workshop->first_image_url = $workshop->first_image_url; // accessor
+
+    return response()->json($workshop);
+}
+
 
     public function destroy(Workshop $workshop)
     {

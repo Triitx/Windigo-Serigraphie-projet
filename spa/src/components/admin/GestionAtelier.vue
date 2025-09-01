@@ -26,17 +26,13 @@
           <td class="border px-2 py-1">{{ workshop.duration }} min</td>
           <td class="border px-2 py-1">{{ workshop.age }} ans</td>
 
-          <!-- Image principale via accessor -->
+          <!-- Image principale -->
           <td class="border px-2 py-1">
-            <img
-              v-if="workshop.first_image_url"
-              :src="workshop.first_image_url"
-              class="table-image"
-            />
+            <img v-if="workshop.first_image_url" :src="workshop.first_image_url" class="table-image" />
             <span v-else>Aucune</span>
           </td>
 
-          <!-- Description tronquée à 100 caractères -->
+          <!-- Description tronquée -->
           <td class="border px-2 py-1">
             {{ workshop.description
               ? (workshop.description.length > 100
@@ -70,9 +66,17 @@
         <input type="file" multiple @change="handleFilesChange" class="border p-1 w-full" />
       </div>
 
-      <!-- Aperçu images réduites -->
+      <!-- Aperçu images existantes et nouvelles -->
       <div class="flex flex-wrap gap-2 mt-2">
-        <div v-for="(img, index) in previewImages" :key="index" class="relative">
+        <!-- Images existantes -->
+        <div v-for="(img, index) in visibleImages" :key="'existing-' + index" class="relative">
+          <img :src="`http://localhost:8000/storage/${img}`"  class="table-image border" />
+          <button type="button" @click="removedImages.push(img)"
+            class="absolute top-0 right-0 bg-red-600 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">x</button>
+        </div>
+
+        <!-- Nouvelles images sélectionnées -->
+        <div v-for="(img, index) in previewImages" :key="'preview-' + index" class="relative">
           <img :src="img" class="table-image border" />
           <button type="button" @click="removePreviewImage(index)"
             class="absolute top-0 right-0 bg-red-600 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">x</button>
@@ -93,7 +97,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, onMounted } from 'vue'
+import { reactive, ref, onMounted, computed } from 'vue'
 import { useWorkshopStore } from '@/stores/Workshop'
 import type { Workshop } from '@/_models/Workshop'
 
@@ -107,11 +111,12 @@ const form = reactive<Workshop>({
   duration: 0,
   age: 0,
   description: '',
-  images: [],
+  images: [] as string[], // <-- préciser le type
 })
 
 const previewImages = ref<string[]>([])
 const files = ref<File[]>([])
+const removedImages = ref<string[]>([])
 
 onMounted(() => store.fetchWorkshops(true))
 
@@ -127,6 +132,11 @@ const removePreviewImage = (index: number) => {
   previewImages.value.splice(index, 1)
 }
 
+// computed pour filtrer les images existantes à afficher
+const visibleImages = computed(() => {
+  return (form.images || []).filter(img => !removedImages.value.includes(img))
+})
+
 const saveWorkshop = async () => {
   store.loading = true
   try {
@@ -137,7 +147,9 @@ const saveWorkshop = async () => {
     formData.append('duration', String(form.duration))
     formData.append('age', String(form.age))
     formData.append('description', form.description || '')
+
     files.value.forEach(f => formData.append('images[]', f))
+    removedImages.value.forEach(img => formData.append('removed_images[]', img))
 
     if (form.id) {
       await store.updateWorkshop(form.id, formData)
@@ -155,8 +167,9 @@ const saveWorkshop = async () => {
 
 const editWorkshop = (workshop: Workshop) => {
   Object.assign(form, workshop)
-  previewImages.value = workshop.images?.map(i => `/storage/${i}`) || []
+  previewImages.value = []
   files.value = []
+  removedImages.value = []
 }
 
 const resetForm = () => {
@@ -170,6 +183,7 @@ const resetForm = () => {
   form.images = []
   previewImages.value = []
   files.value = []
+  removedImages.value = []
 }
 
 const deleteWorkshop = async (id: number) => {
