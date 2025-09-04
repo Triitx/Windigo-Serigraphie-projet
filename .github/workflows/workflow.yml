@@ -11,9 +11,14 @@ permissions:
   pages: write
   id-token: write
 
+defaults:
+    run:
+      working-directory: spa
+
 concurrency:
   group: 'pages'
   cancel-in-progress: true
+
 
 jobs:
   deploy:
