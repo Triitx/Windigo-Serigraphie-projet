@@ -7,10 +7,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-22.04
-
     strategy:
       matrix:
         node-version: [22.13.1]
+
+    defaults:
+      run:
+        working-directory: spa
 
     steps:
       - uses: actions/checkout@v4
