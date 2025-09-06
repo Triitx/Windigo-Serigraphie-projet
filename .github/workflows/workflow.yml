@@ -11,10 +11,17 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Login into the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: https://ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
           context: api
+          push: 'true'
           tags: |
             windigo-serigraphie/api:latest
             windigo-serigraphie/api:${{ github.sha }}
@@ -25,10 +32,17 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Login to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: https://ghcr.io
+          username: ${{ secrets.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
           context: spa
+          push: 'true'
           tags: |
             windigo-serigraphie/spa:latest
             windigo-serigraphie/spa:${{ github.sha }}
