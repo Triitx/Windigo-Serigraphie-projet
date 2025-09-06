@@ -13,6 +13,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - id: toLowerCase
+        run: |
+          echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
       - name: Connexion à GHCR
         uses: docker/login-action@v2
         with:
@@ -25,8 +28,8 @@ jobs:
           context: api
           push: true
           tags: |
-            ghcr.io/api:latest
-            ghcr.io/api:${{ github.sha }}
+            ghcr.io/${REPO}-api:latest
+            ghcr.io/${REPO}-api:${{ github.sha }}
 
   build-image-spa:
     permissions: write-all
@@ -34,6 +37,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - id: toLowerCase
+        run: |
+          echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
       - name: Connexion à GHCR
         uses: docker/login-action@v2
         with:
@@ -46,5 +52,5 @@ jobs:
           context: spa
           push: true
           tags: |
-            ghcr.io/spa:latest
-            ghcr.io/spa:${{ github.sha }}
+            ghcr.io/${REPO}-spa:latest
+            ghcr.io/${REPO}-spa:${{ github.sha }}
