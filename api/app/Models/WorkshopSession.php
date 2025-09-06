@@ -10,11 +10,23 @@ class WorkshopSession extends Model
     use HasFactory;
 
     protected $fillable = [
-    'session_number',
-    'capacity',
-    'workshop_id',
-    'date',
+        'session_number',
+        'capacity',
+        'workshop_id',
+        'date',
+        'avalaible_capacity'
     ];
+
+    protected $casts = [
+        'date' => 'datetime:Y-m-d H:i',
+    ];
+
+    protected $appends = ['remaining_places'];
+
+    public function getRemainingPlacesAttribute()
+    {
+        return $this->capacity - count($this->reservations);
+    }
 
     public function workshop()
     {

@@ -1,0 +1,41 @@
+services:
+  api-docker:
+    container_name: api-docker
+    image: api:latest
+    build:
+      context: api
+      dockerfile: Dockerfile
+    ports:
+      - "8000:80"
+    depends_on:
+      - mysql-db
+
+  spa-docker:
+    container_name: spa-docker
+    image: spa:latest
+    build:
+      context: spa
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - api-docker
+
+  mysql-db:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: laravel
+    ports:
+      - "3306:3306"
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    restart: always
+    ports:
+      - "9001:80"
+    environment:
+      PMA_HOST: 'mysql-db'
+      PMA_USER: 'root'
+      PMA_PASSWORD: 'root'

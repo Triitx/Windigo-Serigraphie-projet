@@ -13,6 +13,12 @@ export const useWorkshopStore = defineStore("workshops", {
     error: null as string | null
   }),
 
+  getters: {
+    workshopSession(state) {
+      return state.currentWorkshop
+    }
+  },
+
   actions: {
     async fetchWorkshops(isAdmin = false) {
       this.loading = true
@@ -32,7 +38,7 @@ export const useWorkshopStore = defineStore("workshops", {
       this.error = null
       try {
         const res = await WorkshopService.getById(id)
-        this.currentWorkshop = res.data
+        this.currentWorkshop = res.data;
       } catch (err: any) {
         this.error = err.message
         this.currentWorkshop = null
@@ -94,12 +100,15 @@ export const useWorkshopStore = defineStore("workshops", {
       try {
         const res = await WorkshopService.bookSession(sessionId)
         this.reservations.push(res.data)
-        return res.data
+        const session = this.currentWorkshop?.workshop_sessions?.find(i => i.id == sessionId)
+        if (session && session?.remaining_places > 0) {
+          session.remaining_places -= 1
+        }
+        this.loading = false
+        return true
       } catch (err: any) {
         this.error = err.message
-        return null
-      } finally {
-        this.loading = false
+        return false
       }
     },
 
@@ -114,6 +123,62 @@ export const useWorkshopStore = defineStore("workshops", {
       } finally {
         this.loading = false
       }
+    },
+
+    // Récupérer les sessions d’un workshop pour l’admin
+    async fetchWorkshopSessions(workshopId: number) {
+      this.loading = true
+      this.error = null
+      try {
+        const res = await WorkshopService.getById(workshopId) // ou un endpoint admin dédié
+        this.sessions = res.data.workshop_sessions ?? []
+      } catch (err: any) {
+        this.error = err.message
+        this.sessions = []
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async createSession(workshopId: number, session: Partial<WorkshopSession>) {
+      this.loading = true
+      this.error = null
+      try {
+        const res = await WorkshopService.createSession(workshopId, session)
+        this.sessions.push(res.data)
+      } catch (err: any) {
+        this.error = err.message
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async updateSession(workshopId: number, sessionId: number, session: Partial<WorkshopSession>) {
+      this.loading = true
+      this.error = null
+      try {
+        const res = await WorkshopService.updateSession(workshopId, sessionId, session)
+        const idx = this.sessions.findIndex(s => s.id === sessionId)
+        if (idx !== -1) this.sessions[idx] = res.data
+      } catch (err: any) {
+        this.error = err.message
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async deleteSession(workshopId: number, sessionId: number) {
+      this.loading = true
+      this.error = null
+      try {
+        await WorkshopService.deleteSession(workshopId, sessionId)
+        this.sessions = this.sessions.filter(s => s.id !== sessionId)
+      } catch (err: any) {
+        this.error = err.message
+      } finally {
+        this.loading = false
+      }
     }
+
   }
 })

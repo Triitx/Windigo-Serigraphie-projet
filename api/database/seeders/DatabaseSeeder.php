@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
       'billing_address' => 10,
       'delivery_address' => 10,
       'email_verified_at' => now(),
-      'remember_token' => Str::random(10)
+      'remember_token' => Str::random(10),
     ]);
 
     User::create([
@@ -55,8 +55,8 @@ class DatabaseSeeder extends Seeder
     Cart::factory(2)->create();
     Order::factory(5)->create();
     OrderProduct::factory(5)->create();
-    WorkshopSession::factory(10)->create();
-    Reservation::factory(3)->create();
-    CustomerReview::factory(5)->create();
+    // WorkshopSession::factory(10)->create();
+    // Reservation::factory(3)->create();
+    // CustomerReview::factory(5)->create();
   }
 }

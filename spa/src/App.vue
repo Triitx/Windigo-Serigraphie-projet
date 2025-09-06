@@ -38,14 +38,14 @@ onMounted(() => {
     <header class="sticky-header">
       <div class="header-container">
         <RouterLink to="/home" class="logo">
-          <img src="@/assets/LogoWindigo-preview.png" alt="Logo Windigo" />
+          <img src="../public/assets/LogoWindigo-preview.png" alt="Logo Windigo" />
         </RouterLink>
 
         <nav class="nav-links">
           <RouterLink to="/boutique">BOUTIQUE</RouterLink>
           <RouterLink to="/ateliers">ATELIERS</RouterLink>
-          <RouterLink to="/">PORTFOLIO</RouterLink>
-          <RouterLink to="/">A PROPOS</RouterLink>
+          <RouterLink to="/portfolio">PORTFOLIO</RouterLink>
+          <RouterLink to="/apropos">A PROPOS</RouterLink>
         </nav>
 
         <div class="user-actions">
