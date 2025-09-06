@@ -6,7 +6,9 @@ on:
 
 jobs:
   build-image-api:
-    permissions: write-all
+    permissions:
+      packages: write
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -21,10 +23,10 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: api
-          push: 'true'
+          push: true
           tags: |
-            windigo-serigraphie/api:latest
-            windigo-serigraphie/api:${{ github.sha }}
+            ghcr.io/${{ github.repository }}:api-latest
+            ghcr.io/${{ github.repository }}:api-${{ github.sha }}
 
   build-image-spa:
     permissions: write-all
@@ -42,7 +44,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: spa
-          push: 'true'
+          push: true
           tags: |
-            windigo-serigraphie/spa:latest
-            windigo-serigraphie/spa:${{ github.sha }}
+            ghcr.io/${{ github.repository }}:spa-latest
+            ghcr.io/${{ github.repository }}:spa-${{ github.sha }}
