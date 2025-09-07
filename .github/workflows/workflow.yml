@@ -17,7 +17,7 @@ jobs:
         uses: docker/login-action@v2
         with:
           registry: https://ghcr.io
-          username: Triitx
+          username: NWB-H
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
@@ -25,11 +25,13 @@ jobs:
           context: api
           push: true
           tags: |
-            ghcr.io/triitx/windigo-serigraphie-projet-api:latest
-            ghcr.io/triitx/windigo-serigraphie-projet-api:${{ github.sha }}
+            ghcr.io/nwb-h/windigo-serigraphie-projet-api:latest
+            ghcr.io/nwb-h/windigo-serigraphie-projet-api:${{ github.sha }}
 
   build-image-spa:
-    permissions: write-all
+    permissions:
+      packages: write
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -38,7 +40,7 @@ jobs:
         uses: docker/login-action@v2
         with:
           registry: https://ghcr.io
-          username: Triitx
+          username: NWB-H
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
@@ -46,5 +48,47 @@ jobs:
           context: spa
           push: true
           tags: |
-            ghcr.io/triitx/windigo-serigraphie-projet-spa:latest
-            ghcr.io/triitx/windigo-serigraphie-projet-spa:${{ github.sha }}
+            ghcr.io/nwb-h/windigo-serigraphie-projet-spa:latest
+            ghcr.io/nwb-h/windigo-serigraphie-projet-spa:${{ github.sha }}
+
+  build-api:
+    permissions:
+      packages: write
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Use PHP 8.2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.2
+      - run: composer install
+      
+  build-spa:
+    permissions:
+      packages: write
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22.x
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build
+      
+  ftptO2switch:
+    needs: [ build-spa, build-api]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploiement continue
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.SERVER }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          
